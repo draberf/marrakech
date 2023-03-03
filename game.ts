@@ -37,9 +37,10 @@ function createBoard2D<T>(width: number, height: number, value: T): Array<Array<
 
 /** Checks if two carpets overlap at least partially.
  * 
- * @param {*} carpet1 
- * @param {*} carpet2 
- * @returns 
+ * @param {Carpet} carpet1 
+ * @param {Carpet} carpet2 
+ * 
+ * @returns {boolean} Whether the carpets overlap.
  */
 function checkOverlap(carpet1: Carpet, carpet2: Carpet): boolean {
 
@@ -48,7 +49,9 @@ function checkOverlap(carpet1: Carpet, carpet2: Carpet): boolean {
     return true;
 }
 
-/**
+/** Represents a player entity in the game state.
+ * 
+ * 
  * 
  */
 class Player {
@@ -71,6 +74,9 @@ class Player {
     }
 }
 
+/** Represents the board in a game state.
+ * 
+ */
 class Board {
 
     assam_x: number;
@@ -103,22 +109,35 @@ class Board {
         this.primary_diagonal_loop = true;
     }
 
+
+    /** Returns the color at a given board tile
+     * 
+     * @param x The x-coordinate of the tile
+     * @param y The y-coordinate of the tile
+     * 
+     * @returns The tile color
+     */
     color(x: number, y: number): Color {
         return this.grid[y][x];
     }
 
     /** Transforms coordinates into a unique index.
      * 
-     * @param {Number} x 
-     * @param {Number} y 
+     * @param x The x-coordinate of the tile
+     * @param y The y-coordinate of the tile
+     * 
+     * @returns The tile index
      */
-    index(x: number, y: number) {
+    index(x: number, y: number): number {
         return y*this.width + x;
     }
 
     /** Checks if carpet would overlap with any top carpet.
      * 
-     * @param {carpet} carpet 
+     * @param carpet The inspected carpet
+     * 
+     * @returns Whether the carpet overlaps with any of the board-tracked
+     * 'top carpets'
      */
     overlapsTopCarpet(carpet: Carpet): boolean {
         for (let top_carpet of this.top_carpets) {
@@ -131,6 +150,10 @@ class Board {
         return false;
     }
     
+    /** Places the carpet on the board, updating all relevant parameters.
+     * 
+     * @param carpet The carpet to be placed
+     */
     placeCarpet(carpet: Carpet): void {
 
         // cover board
@@ -156,7 +179,11 @@ class Board {
         this.top_carpets.push(carpet);
     }
 
-    getValidPositions() {
+    /** Creates a list of potential carpet positions around Assam.
+     * 
+     * @returns List of valid positions as Carpets (x,y) 
+     */
+    getValidPositions(): Array<Carpet> {
         let positions: Array<Carpet> = [];
 
         // horizontal variants
@@ -169,6 +196,7 @@ class Board {
             new Carpet(this.assam_x,   this.assam_y+1, false, Color.NONE)
         ];
 
+        // vertical variants
         let vert = [
             new Carpet(this.assam_x-1, this.assam_y-1, true, Color.NONE),
             new Carpet(this.assam_x-1, this.assam_y,   true, Color.NONE),
@@ -178,6 +206,7 @@ class Board {
             new Carpet(this.assam_x+1, this.assam_y,   true, Color.NONE),
         ]
 
+        // remove OOB carpets and those that overlap 1:1
         for (let carpet of [...horiz, ...vert]) {
             if (!this.isCarpetOutOfBounds(carpet) &&
                 !this.overlapsTopCarpet(carpet)) {
@@ -188,16 +217,33 @@ class Board {
         return positions;
     }
 
+    /** Checks if a coordinate is out of bounds
+     * 
+     * @param x The x-coordinate of tile
+     * @param y The y-coordinate of tile
+     * 
+     * @returns True the tile is out of board bounds
+     */
     isOutOfBounds(x: number, y: number): boolean {
         return (
             x < 0 || x > this.width ||
             y < 0 || y > this.height);
     }
 
+    /** Checks if Assam has stepped out of bounds
+     * 
+     * @returns True if Assam is out of board bounds
+     */
     isAssamOutOfBounds(): boolean {
         return this.isOutOfBounds(this.assam_x, this.assam_y);
     }
 
+    /** Checks if a carpet position is out of bounds
+     * 
+     * @param carpet The inspected carpet
+     * 
+     * @returns True if the carpet would be placed out of bounds
+     */
     isCarpetOutOfBounds(carpet: Carpet): boolean {
         if (carpet.x < 0 || carpet.y < 0) { return true; }
         
@@ -212,11 +258,19 @@ class Board {
         return false;
     }
 
+    /** Turns Assam ninety degrees.
+     * 
+     * @param right If Assam should turn right (turns left if false)
+     */
     turnAssam(right: boolean): void {
         this.assam_dir += (right ? -1 : 1);
         this.assam_dir %= 4;
     }
 
+    /** Moves Assam one step in his direction.
+     * 
+     * @param checkOutOfBounds If the step should worry about OOB movement
+     */
     moveAssamStep(checkOutOfBounds: boolean): void {
         // right
         if (this.assam_dir == 0) {
@@ -259,12 +313,20 @@ class Board {
         }
     }
 
+    /** Moves Assam a number of steps in his direction.
+     * 
+     * @param steps The number of steps to move by
+     */
     moveAssam(steps: number): void {
         for (let i = 0; i < steps; i++) {
             this.moveAssamStep(true);
         }
     }
 
+    /** Returns the total contiguous area under Assam.
+     * 
+     * @returns The total number of contiguous tiles
+     */
     findContiguousUnderAssam(): number {
         
         let color = this.color(this.assam_x, this.assam_y);
@@ -307,10 +369,16 @@ class Game {
 
     board: Board;
 
+    turn: number;
+
     constructor (players: Array<string>) {
         
         this.playercount = players.length;
 
         this.board = new Board();
+        this.turn = 0;
+
+        // TODO: Add association between player and color
+        // TODO: Add players as Player objects
     }
 }
