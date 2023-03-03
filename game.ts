@@ -1,28 +1,37 @@
 'use strict';
 
-/** directions:
- *        N: 1
- *  W: 2        E: 0
- *        S: 3
-*/
 
+enum Direction {EAST, NORTH, WEST, SOUTH};
+enum Color {NONE, RED, BLUE, YELLOW, ORANGE};
+
+/** Represents an in-game Carpet object.
+ * 
+ * @param {number} x The x-coordinate of upper-left carpet tile
+ * @param {number} y The y-coordinate of upper-right carpet tile
+ * 
+ * @param {boolean} isVertical Whether the carpet is placed horizontaly or vertically
+ * 
+ * @param {Color} color The color of the carpet
+ */
 class Carpet {
-    constructor(x, y, isVertical, color) {
-        this.x = x;
-        this.y = y;
-        this.isVertical = isVertical;
-        this.color = color;
-    }
+
+    x: number;
+    y: number;
+    isVertical: boolean = false;
+    color: Color = Color.NONE;
+
+    constructor(x: number, y: number, isVertical?: boolean, color?: Color) { }
 };
 
 /** Initializes a 2D grid with predefined values.
  * 
- * @param {Number} width 
- * @param {Number} height 
- * @param {*} value 
- * @returns 
+ * @param {number} width The width of the grid (column count)
+ * @param {Number} height The height of the grid (row count)
+ * @param {T} value Initial value in each cell
+ *  
+ * @returns {Array<Array<T>>} A 2D array filled with the initial value
  */
-function createBoard2D(width, height, value) {
+function createBoard2D<T>(width: number, height: number, value: T): Array<Array<T>> {
     return [...Array(height)].map(_=>Array(width).fill(value));
 }
 
@@ -32,57 +41,50 @@ function createBoard2D(width, height, value) {
  * @param {*} carpet2 
  * @returns 
  */
-function checkOverlap(carpet1, carpet2) {
+function checkOverlap(carpet1: Carpet, carpet2: Carpet): boolean {
 
-    // both horizontal
-    if (!carpet1.isVertical && !carpet2.isVertical) {
-        return (abs(carpet1.x - carpet2.x) <= 1);
-    }
-
-    // both vertical
-    if (carpet1.isVertical && carpet2.isVertical) {
-        return (abs(carpet1.y - carpet2.y) <= 1);
-    }
-
-    // horizontal, then vertical
-    if (!carpet1.isVertical && carpet2.isVertical) {
-        x_diff = carpet2.x - carpet1.x;
-        if (x_diff < 0 || x_diff > 1) { return false; }
-        y_diff = carpet2.y - carpet1.y;
-        if (y_diff < 0 || y_diff > 1) { return false; }
-        return true;
-    }
-
-    // vertical, then horizontal
-    {
-        x_diff = carpet2.x - carpet1.x;
-        if (x_diff < -1 || x_diff > 0) { return false; }
-        y_diff = carpet2.y - carpet2.y;
-        if (y_diff < 0 || y_diff > 1)  { return false; }
-        return true;
-    }
+    // TODO: remake function
+    
+    return true;
 }
 
+/**
+ * 
+ */
 class Player {
-    constructor (deck) {
-        this.deck = deck;
-        this.dirhams = 30;
-    }
 
-    getTopCarpet() {
+    deck: Array<Color>;
+    dirhams: number;
+    constructor (deck: Array<Color>, dirhams: number) { }
+
+    getTopCarpet(): Color {
         return this.deck[0];
     }
 
-    pay(amount) {
-        this.dirhams = max(this.dirhams-amount, 0);
+    pay(amount: number): void {
+        this.dirhams = Math.max(this.dirhams-amount, 0);
+        // TODO: specify behavior on cash out
     }
 
-    receive(amount) {
+    receive(amount: number): void {
         this.dirhams += amount;
     }
 }
 
 class Board {
+
+    assam_x: number;
+    assam_y: number;
+    assam_dir: Direction;
+
+    width: number;
+    height: number;
+
+    grid: Array<Array<Color>>;
+
+    top_carpets: Array<Carpet>;
+
+    primary_diagonal_loop: boolean;
 
     constructor () {
         this.assam_x = 3;
@@ -92,7 +94,7 @@ class Board {
         this.width = 7;
         this.height = 7;
 
-        this.board = createBoard2D(this.width,this.height,"empty");
+        this.grid = createBoard2D(this.width, this.height, Color.NONE);
 
         this.top_carpets = [];
 
@@ -101,8 +103,8 @@ class Board {
         this.primary_diagonal_loop = true;
     }
 
-    color(x, y) {
-        return this.board[y][x];
+    color(x: number, y: number): Color {
+        return this.grid[y][x];
     }
 
     /** Transforms coordinates into a unique index.
@@ -110,7 +112,7 @@ class Board {
      * @param {Number} x 
      * @param {Number} y 
      */
-    index(x, y) {
+    index(x: number, y: number) {
         return y*this.width + x;
     }
 
@@ -118,7 +120,7 @@ class Board {
      * 
      * @param {carpet} carpet 
      */
-    overlapsTopCarpet(carpet) {
+    overlapsTopCarpet(carpet: Carpet): boolean {
         for (let top_carpet of this.top_carpets) {
             if (carpet.x == top_carpet.x && 
                 carpet.y == top_carpet.y &&
@@ -129,19 +131,19 @@ class Board {
         return false;
     }
     
-    placeCarpet(carpet) {
+    placeCarpet(carpet: Carpet): void {
 
         // cover board
         let x = carpet.x;
         let y = carpet.y;
-        this.board[y][x] = carpet.color;
+        this.grid[y][x] = carpet.color;
         if (carpet.isVertical) { y += 1; }
         else { x += 1; }
-        this.board[y][x] = carpet.color;
+        this.grid[y][x] = carpet.color;
 
     
         // remove potential top carpets by filtering
-        let temp_top_carpets = [];
+        let temp_top_carpets: Array<Carpet> = [];
         for (let top_carpet of this.top_carpets) {
             if (!checkOverlap(carpet, top_carpet)) {
                 temp_top_carpets.push(top_carpet);
@@ -155,29 +157,29 @@ class Board {
     }
 
     getValidPositions() {
-        let positions = [];
+        let positions: Array<Carpet> = [];
 
         // horizontal variants
         let horiz = [
-            Carpet(this.assam_x-1, this.assam_y-1, false),
-            Carpet(this.assam_x,   this.assam_y-1, false),
-            Carpet(this.assam_x-2, this.assam_y,   false),
-            Carpet(this.assam_x+1, this.assam_y,   false),
-            Carpet(this.assam_x-1, this.assam_y+1, false),
-            Carpet(this.assam_x,   this.assam_y+1, false)
+            new Carpet(this.assam_x-1, this.assam_y-1, false, Color.NONE),
+            new Carpet(this.assam_x,   this.assam_y-1, false, Color.NONE),
+            new Carpet(this.assam_x-2, this.assam_y,   false, Color.NONE),
+            new Carpet(this.assam_x+1, this.assam_y,   false, Color.NONE),
+            new Carpet(this.assam_x-1, this.assam_y+1, false, Color.NONE),
+            new Carpet(this.assam_x,   this.assam_y+1, false, Color.NONE)
         ];
 
         let vert = [
-            Carpet(this.assam_x-1, this.assam_y-1, true),
-            Carpet(this.assam_x-1, this.assam_y,   true),
-            Carpet(this.assam_x,   this.assam_y-2, true),
-            Carpet(this.assam_x,   this.assam_y+1, true),
-            Carpet(this.assam_x+1, this.assam_y-1, true),
-            Carpet(this.assam_x+1, this.assam_y,   true),
+            new Carpet(this.assam_x-1, this.assam_y-1, true, Color.NONE),
+            new Carpet(this.assam_x-1, this.assam_y,   true, Color.NONE),
+            new Carpet(this.assam_x,   this.assam_y-2, true, Color.NONE),
+            new Carpet(this.assam_x,   this.assam_y+1, true, Color.NONE),
+            new Carpet(this.assam_x+1, this.assam_y-1, true, Color.NONE),
+            new Carpet(this.assam_x+1, this.assam_y,   true, Color.NONE),
         ]
 
         for (let carpet of [...horiz, ...vert]) {
-            if (!isCarpetOutOfBounds(this.width,this.height,carpet) &&
+            if (!this.isCarpetOutOfBounds(carpet) &&
                 !this.overlapsTopCarpet(carpet)) {
                     positions.push(carpet);
                 }
@@ -186,17 +188,17 @@ class Board {
         return positions;
     }
 
-    isOutOfBounds(x, y) {
+    isOutOfBounds(x: number, y: number): boolean {
         return (
             x < 0 || x > this.width ||
             y < 0 || y > this.height);
     }
 
-    isAssamOutOfBounds() {
+    isAssamOutOfBounds(): boolean {
         return this.isOutOfBounds(this.assam_x, this.assam_y);
     }
 
-    isCarpetOutOfBounds(carpet) {
+    isCarpetOutOfBounds(carpet: Carpet): boolean {
         if (carpet.x < 0 || carpet.y < 0) { return true; }
         
         let max_x = carpet.x;
@@ -205,17 +207,17 @@ class Board {
         if (!carpet.isVertical) { max_x += 1; }
         else { max_y += 1; }
     
-        if (carpet.max_x >= this.width || carpet.max_y >= this.height ) { return true; }
+        if (max_x >= this.width || max_y >= this.height ) { return true; }
     
         return false;
     }
 
-    turnAssam(right) {
+    turnAssam(right: boolean): void {
         this.assam_dir += (right ? -1 : 1);
         this.assam_dir %= 4;
     }
 
-    moveAssamStep(checkOutOfBounds) {
+    moveAssamStep(checkOutOfBounds: boolean): void {
         // right
         if (this.assam_dir == 0) {
             this.assam_x += 1;
@@ -239,7 +241,7 @@ class Board {
         if (this.isAssamOutOfBounds()) {
             
             // set turning direction
-            right = true;
+            let right = true;
             for (let boolean of [
                 this.assam_x % 2 == 1,
                 this.assam_y % 2 == 1,
@@ -257,38 +259,40 @@ class Board {
         }
     }
 
-    moveAssam(steps) {
+    moveAssam(steps: number): void {
         for (let i = 0; i < steps; i++) {
             this.moveAssamStep(true);
         }
     }
 
-    findContiguousUnderAssam() {
+    findContiguousUnderAssam(): number {
         
         let color = this.color(this.assam_x, this.assam_y);
-        if (color == "empty") { return 0; }
+        if (color == Color.NONE) { return 0; }
         
-        let queue = [{x: this.assam_x, y: this.assam_y}];
-        let visited = [];
+        let queue: Array<[number,number]> = [[this.assam_x,this.assam_y]];
+        let visited: Array<number> = [];
 
         while (queue.length > 0) {
 
-            [x, y] = queue.pop();
+            // using the assertion operator '!'
+            // if the queue was empty, this branch wouldn't start
+            let [x,y]: [number,number] = queue.pop()!;
             
             // check for failures
             if (this.isOutOfBounds(x,y))  { continue; }
             if (this.color(x,y) != color) { continue; }
-            index = this.index(x, y);
+            let index = this.index(x, y);
             if (visited.includes(index)) { continue; }            
 
             // extend visited
             visited.push(index);
 
             // update queue
-            queue.push({x:x-1, y:y  });
-            queue.push({x:x+1, y:y  });
-            queue.push({x:x,   y:y-1});
-            queue.push({x:x,   y:y+1});
+            queue.push([x-1, y  ]);
+            queue.push([x+1, y  ]);
+            queue.push([x,   y-1]);
+            queue.push([x,   y+1]);
         }
 
         return visited.length;
@@ -298,9 +302,14 @@ class Board {
 
 class Game {
 
-    constructor (players) {
-        this.players = players;
-        this.playercount = length(players);
+    players: Array<string>;
+    playercount: number;
+
+    board: Board;
+
+    constructor (players: Array<string>) {
+        
+        this.playercount = players.length;
 
         this.board = new Board();
     }
