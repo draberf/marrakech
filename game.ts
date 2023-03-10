@@ -21,6 +21,18 @@ class Carpet {
     color: Color = Color.NONE;
 
     constructor(x: number, y: number, isVertical?: boolean, color?: Color) { }
+
+    /** 
+     * 
+     * @returns The coordinates of the carpet's second tile
+     */
+    getSecondTile(): {x: number, y: number} {
+        if (!this.isVertical) {
+            return {x: this.x+1, y: this.y};
+        } else {
+            return {x: this.x, y: this.y+1};
+        }
+    }
 };
 
 /** Initializes a 2D grid with predefined values.
