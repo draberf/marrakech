@@ -26,7 +26,7 @@ class Carpet {
 /** Initializes a 2D grid with predefined values.
  * 
  * @param {number} width The width of the grid (column count)
- * @param {Number} height The height of the grid (row count)
+ * @param {number} height The height of the grid (row count)
  * @param {T} value Initial value in each cell
  *  
  * @returns {Array<Array<T>>} A 2D array filled with the initial value
