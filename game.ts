@@ -56,9 +56,32 @@ function createBoard2D<T>(width: number, height: number, value: T): Array<Array<
  */
 function checkOverlap(carpet1: Carpet, carpet2: Carpet): boolean {
 
-    // TODO: remake function
+    // definite miss:
+    if (Math.abs(carpet1.x - carpet2.x) > 1) { return false; }
+    if (Math.abs(carpet1.y - carpet2.y) > 1) { return false; }
+
+    // both origins overlap
+    if (carpet1.x == carpet2.x && carpet1.y == carpet2.y) {
+        return true;
+    }
+
+    // other options
+    let carpet1_aux: {x: number, y: number} = carpet1.getSecondTile();
     
-    return true;
+    if (carpet1_aux.x == carpet2.x && carpet1_aux.y == carpet2.y) {
+        return true;
+    }
+
+    let carpet2_aux: {x: number, y: number} = carpet2.getSecondTile();
+
+    if (carpet1.x == carpet2_aux.x && carpet1.y == carpet2_aux.y) {
+        return true;
+    }
+    if (carpet1_aux.x == carpet2_aux.x && carpet1_aux.y == carpet2_aux.y) {
+        return true;
+    }
+    
+    return false;
 }
 
 /** Represents a player entity in the game state.
