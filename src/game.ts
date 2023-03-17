@@ -397,7 +397,7 @@ export class Board {
     
 }
 
-class Game {
+export class Game {
 
     players: Array<string>;
     playercount: number;
