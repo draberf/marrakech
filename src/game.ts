@@ -89,7 +89,7 @@ function checkOverlap(carpet1: Carpet, carpet2: Carpet): boolean {
  * 
  * 
  */
-class Player {
+export class Player {
 
     deck: Array<Color>;
     dirhams: number;
