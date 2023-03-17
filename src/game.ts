@@ -13,7 +13,7 @@ enum Color {NONE, RED, BLUE, YELLOW, ORANGE};
  * 
  * @param {Color} color The color of the carpet
  */
-class Carpet {
+export class Carpet {
 
     x: number;
     y: number;
