@@ -3,6 +3,7 @@
 
 enum Direction {EAST, NORTH, WEST, SOUTH};
 enum Color {NONE, RED, BLUE, YELLOW, ORANGE};
+enum Action {TURN, ROLL, PLACE};
 
 /** Represents an in-game Carpet object.
  * 
