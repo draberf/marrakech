@@ -416,6 +416,8 @@ export class Game {
     turn: number;
 
     constructor (players: Array<string>) {
+
+        this.players = players;
         
         this.playercount = players.length;
 
