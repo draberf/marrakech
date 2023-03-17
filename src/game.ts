@@ -99,7 +99,10 @@ export class Player {
 
     deck: Array<Color>;
     dirhams: number;
-    constructor (deck: Array<Color>, dirhams: number) { }
+    constructor (deck: Array<Color>, dirhams: number) {
+        this.deck = deck;
+        this.dirhams = dirhams;
+    }
 
     getTopCarpet(): Color {
         return this.deck[0];
