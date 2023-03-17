@@ -131,6 +131,7 @@ export class Board {
     height: number;
 
     grid: Array<Array<Color>>;
+    dir_grid: Array<Array<Direction>>;
 
     top_carpets: Array<Carpet>;
 
@@ -145,6 +146,7 @@ export class Board {
         this.height = 7;
 
         this.grid = createBoard2D(this.width, this.height, Color.NONE);
+        this.dir_grid = createBoard2D(this.width, this.height, Direction.NORTH);
 
         this.top_carpets = [];
 
