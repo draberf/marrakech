@@ -421,6 +421,8 @@ export class Game {
     next_player: string;
     next_action: Action;
 
+    last_rolled: number = 0;
+
     constructor (players: Array<string>) {
 
         this.players = players;
