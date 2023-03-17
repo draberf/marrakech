@@ -112,7 +112,7 @@ export class Player {
 /** Represents the board in a game state.
  * 
  */
-class Board {
+export class Board {
 
     assam_x: number;
     assam_y: number;
