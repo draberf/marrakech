@@ -418,9 +418,19 @@ export class Game {
 
     turn: number;
 
+    next_player: string;
+    next_action: Action;
+
     constructor (players: Array<string>) {
 
         this.players = players;
+
+        if (players.length < 2) {
+            throw Error("Not enough players to start the game.");
+        }
+
+        this.next_player = players[0];
+        this.next_action = Action.TURN;
         
         this.playercount = players.length;
 
