@@ -20,7 +20,13 @@ export class Carpet {
     isVertical: boolean = false;
     color: Color = Color.NONE;
 
-    constructor(x: number, y: number, isVertical?: boolean, color?: Color) { }
+    constructor(x: number, y: number, isVertical?: boolean, color?: Color) {
+        this.x = x;
+        this.y = y;
+
+        if (isVertical !== undefined) { this.isVertical = isVertical; }
+        if (color !== undefined) { this.color = color; }
+    }
 
     /** 
      * 
