@@ -218,9 +218,19 @@ export class Board {
         let x = carpet.x;
         let y = carpet.y;
         this.grid[y][x] = carpet.color;
-        if (carpet.isVertical) { y += 1; }
-        else { x += 1; }
-        this.grid[y][x] = carpet.color;
+
+        if (carpet.isVertical) {
+            this.grid[y+1][x] = carpet.color;
+            
+            this.dir_grid[y][x] = Direction.NORTH;
+            this.dir_grid[y+1][x] = Direction.SOUTH;
+        }
+        else {
+            this.grid[y][x+1] = carpet.color;
+
+            this.dir_grid[y][x] = Direction.WEST;
+            this.dir_grid[y][x+1] = Direction.EAST;
+        }
 
     
         // remove potential top carpets by filtering
