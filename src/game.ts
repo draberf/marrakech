@@ -61,7 +61,7 @@ function createBoard2D<T>(width: number, height: number, value: T): Array<Array<
  * 
  * @returns {boolean} Whether the carpets overlap.
  */
-function checkOverlap(carpet1: Carpet, carpet2: Carpet): boolean {
+export function checkOverlap(carpet1: Carpet, carpet2: Carpet): boolean {
 
     // definite miss:
     if (Math.abs(carpet1.x - carpet2.x) > 1) { return false; }
