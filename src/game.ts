@@ -168,6 +168,17 @@ export class Board {
         return this.grid[y][x];
     }
 
+    /** Returns the direction of carpet tile at a given board tile
+     * 
+     * @param x The x-coordinate of the tile
+     * @param y The y-coordinate of the tile
+     * 
+     * @returns The tile direction
+     */
+    direction(x: number, y: number): Direction {
+        return this.dir_grid[y][x];
+    }
+
     /** Transforms coordinates into a unique index.
      * 
      * @param x The x-coordinate of the tile
