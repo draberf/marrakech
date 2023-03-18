@@ -17,7 +17,7 @@ test('constructs vertical carpet with color', () => {
 })
 
 test('horizontal carpet second tile has good offset', () => {
-    let carpet: Carpet = new Carpet(3,3,true);
+    let carpet: Carpet = new Carpet(3,3,false);
     expect(carpet.getSecondTile()).toEqual({x: 4, y: 3});
 })
 
