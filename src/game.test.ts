@@ -69,4 +69,30 @@ test('carpets overlap or don\'t', () => {
     }
 })
 
-// 
+
+// PLAYERS
+import { Player } from './game';
+
+test('constructs player', () => {
+    let player: Player = new Player([Color.RED], 30);
+    expect(player.deck).toContain(Color.RED);
+    expect(player.dirhams).toBe(30);
+})
+
+test('player receives money', () => {
+    let player: Player = new Player([], 30);
+    player.receive(15);
+    expect(player.dirhams).toBe(45);
+})
+
+test('player pays money', () => {
+    let player: Player = new Player([], 30);
+    player.pay(20);
+    expect(player.dirhams).toBe(10);
+})
+
+test('player overpays', () => {
+    let player: Player = new Player([], 30);
+    player.pay(50);
+    expect(player.dirhams).toBe(0);
+})
