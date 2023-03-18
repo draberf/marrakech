@@ -15,3 +15,13 @@ test('constructs vertical carpet with color', () => {
     expect(carpet.isVertical).toBe(true);
     expect(carpet.color).toBe(Color.RED);
 })
+
+test('horizontal carpet second tile has good offset', () => {
+    let carpet: Carpet = new Carpet(3,3,true);
+    expect(carpet.getSecondTile()).toEqual({x: 4, y: 3});
+})
+
+test('vertical carpet second tile has good offset', () => {
+    let carpet: Carpet = new Carpet(4,4,true);
+    expect(carpet.getSecondTile()).toEqual({x: 4, y: 5});
+})
