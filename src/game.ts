@@ -1,9 +1,9 @@
 'use strict';
 
 
-enum Direction {EAST, NORTH, WEST, SOUTH};
-enum Color {NONE, RED, BLUE, YELLOW, ORANGE};
-enum Action {TURN, ROLL, PLACE};
+export enum Direction {EAST, NORTH, WEST, SOUTH};
+export enum Color {NONE, RED, BLUE, YELLOW, ORANGE};
+export enum Action {TURN, ROLL, PLACE};
 
 /** Represents an in-game Carpet object.
  * 
