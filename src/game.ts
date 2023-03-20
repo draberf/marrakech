@@ -363,10 +363,15 @@ export class Board {
         if (this.isAssamOutOfBounds()) {
             
             // set turning direction
-            let right = true;
+            let right: boolean;
+            if (this.assam_x < 0 || this.assam_x >= this.height) {
+                right = true;
+            } else {
+                right = false;
+            }
             for (let boolean of [
-                this.assam_x % 2 == 1,
-                this.assam_y % 2 == 1,
+                this.assam_x % 2 != 0,
+                this.assam_y % 2 != 0,
                 this.primary_diagonal_loop]) {
                     right = (boolean ? !right : right);
                 }
