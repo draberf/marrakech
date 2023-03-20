@@ -1,6 +1,6 @@
 // CARPET tests
 
-import {Color, Carpet, checkOverlap} from './game';
+import {Color, Carpet, checkOverlap, Direction} from './game';
 
 test('constructs carpet', () => {
     let carpet: Carpet = new Carpet(0,0);
@@ -95,4 +95,20 @@ test('player overpays', () => {
     let player: Player = new Player([], 30);
     player.pay(50);
     expect(player.dirhams).toBe(0);
+})
+
+// BOARD
+import { Board } from './game';
+
+test('board constructor', () => {
+    let board = new Board();
+    
+    expect(board.assam_x).toBe(3);
+    expect(board.assam_y).toBe(3);
+    expect(board.assam_dir).toBe(Direction.SOUTH);
+
+    expect(board.width).toBe(7);
+    expect(board.height).toBe(7);
+
+    expect(board.top_carpets).toHaveLength(0);
 })
