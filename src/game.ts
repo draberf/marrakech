@@ -141,7 +141,7 @@ export class Board {
     constructor () {
         this.assam_x = 3;
         this.assam_y = 3;
-        this.assam_dir = 3; // south
+        this.assam_dir = Direction.SOUTH; // south
 
         this.width = 7;
         this.height = 7;
