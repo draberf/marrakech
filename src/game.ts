@@ -341,19 +341,19 @@ export class Board {
      */
     moveAssamStep(checkOutOfBounds: boolean): void {
         // right
-        if (this.assam_dir == 0) {
+        if (this.assam_dir == Direction.EAST) {
             this.assam_x += 1;
         }
         // up
-        if (this.assam_dir == 1) {
+        if (this.assam_dir == Direction.NORTH) {
             this.assam_y -= 1;
         }
         // left
-        if (this.assam_dir == 2) {
+        if (this.assam_dir == Direction.WEST) {
             this.assam_x -= 1;
         }
         // down
-        if (this.assam_dir == 3) {
+        if (this.assam_dir == Direction.SOUTH) {
             this.assam_y += 1;
         }
 
