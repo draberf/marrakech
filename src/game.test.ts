@@ -112,3 +112,20 @@ test('board constructor', () => {
 
     expect(board.top_carpets).toHaveLength(0);
 })
+test('board indices', () => {
+    let board = new Board();
+
+    expect(board.index(0,0)).toBe(0);
+    expect(board.index(1,0)).toBe(1);
+    expect(board.index(0,1)).toBe(7);
+    expect(board.index(6,6)).toBe(48);
+})
+
+test('board functions on empty', () => {
+    let board = new Board();
+
+    expect(board.color(0,0)).toBe(Color.NONE);
+    expect(board.color(6,6)).toBe(Color.NONE);
+
+    expect(board.direction(0,0)).toBe(Direction.NORTH);
+})
