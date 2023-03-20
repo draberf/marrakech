@@ -331,7 +331,7 @@ export class Board {
      * @param right If Assam should turn right (turns left if false)
      */
     turnAssam(right: boolean): void {
-        this.assam_dir += (right ? -1 : 1);
+        this.assam_dir += (right ? -1 : 1) + 4;
         this.assam_dir %= 4;
     }
 
