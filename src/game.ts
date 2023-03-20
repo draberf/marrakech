@@ -294,8 +294,8 @@ export class Board {
      */
     isOutOfBounds(x: number, y: number): boolean {
         return (
-            x < 0 || x > this.width ||
-            y < 0 || y > this.height);
+            x < 0 || x >= this.width ||
+            y < 0 || y >= this.height);
     }
 
     /** Checks if Assam has stepped out of bounds
