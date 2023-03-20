@@ -112,6 +112,7 @@ test('board constructor', () => {
 
     expect(board.top_carpets).toHaveLength(0);
 })
+
 test('board indices', () => {
     let board = new Board();
 
@@ -128,4 +129,38 @@ test('board functions on empty', () => {
     expect(board.color(6,6)).toBe(Color.NONE);
 
     expect(board.direction(0,0)).toBe(Direction.NORTH);
+})
+
+test('simple assam movement', () => {
+    let board = new Board();
+
+    board.turnAssam(false);
+    expect(board.assam_x).toBe(3);
+    expect(board.assam_y).toBe(3);
+    expect(board.assam_dir).toBe(Direction.EAST);
+
+    board.turnAssam(true);
+    board.turnAssam(true);
+    expect(board.assam_dir).toBe(Direction.WEST);
+
+    board.moveAssam(1);
+    expect(board.assam_x).toBe(2);
+    expect(board.assam_y).toBe(3);
+})
+
+test('assam turns around', () => {
+    let board = new Board();
+    board.turnAssam(false);
+    board.turnAssam(false);
+
+    board.moveAssam(4);
+    expect(board.assam_x).toBe(4);
+    expect(board.assam_y).toBe(1);
+    expect(board.assam_dir).toBe(Direction.SOUTH);
+
+    board.turnAssam(false);
+    board.moveAssam(3);
+    expect(board.assam_x).toBe(5);
+    expect(board.assam_y).toBe(0);
+    expect(board.assam_dir).toBe(Direction.WEST);
 })
