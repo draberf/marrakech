@@ -220,6 +220,7 @@ test('horizontal carpet placement', () => {
 
     expect(board.top_carpets.length).toBe(1);
 })
+
 // BOARD PLACEMENT
 
 function setUpBoard(): Board {
@@ -246,3 +247,37 @@ function setUpBoard(): Board {
 
     return board;
 }
+
+test('check top carpets mid-game', () => {
+    let board = setUpBoard();
+
+    expect(board.top_carpets).toBe([]);
+
+    let expectedTopCarpets: Array<Carpet> = [
+        new Carpet(1,1,false),
+        new Carpet(1,2,true),
+        new Carpet(1,4,true),
+        new Carpet(2,3,true),
+        new Carpet(3,0,true),
+        new Carpet(4,1,false),
+        new Carpet(4,2,false),
+        new Carpet(4,5,false),
+        new Carpet(5,3,true)
+    ];
+
+    let overlappedCarpets: Array<Carpet> = [
+        new Carpet(1,2,false),
+        new Carpet(3,2,false),
+        new Carpet(3,3,true),
+        new Carpet(3,4,false),
+        new Carpet(4,4,true)
+    ];
+
+    for (let carpet of expectedTopCarpets) {
+        expect(board.overlapsTopCarpet(carpet)).toBe(true);
+    }
+
+    for (let carpet of overlappedCarpets) {
+        expect(board.overlapsTopCarpet(carpet)).toBe(false);
+    }
+})
