@@ -187,3 +187,31 @@ test('assam turns around (inverse)', () => {
     expect(board.assam_dir).toBe(Direction.NORTH);
 
 })
+
+test('horizontal carpet placement', () => {
+    let board = new Board();
+
+    board.placeCarpet(new Carpet(1,1,false,Color.RED));
+
+    expect(board.color(1,1)).toBe(Color.RED);
+    expect(board.color(2,1)).toBe(Color.RED);
+
+    expect(board.direction(1,1)).toBe(Direction.WEST);
+    expect(board.direction(2,1)).toBe(Direction.EAST);
+
+    expect(board.top_carpets.length).toBe(1);
+})
+
+test('horizontal carpet placement', () => {
+    let board = new Board();
+
+    board.placeCarpet(new Carpet(5,4,true,Color.ORANGE));
+
+    expect(board.color(5,4)).toBe(Color.ORANGE);
+    expect(board.color(5,5)).toBe(Color.ORANGE);
+
+    expect(board.direction(5,4)).toBe(Direction.NORTH);
+    expect(board.direction(5,5)).toBe(Direction.SOUTH);
+
+    expect(board.top_carpets.length).toBe(1);
+})
