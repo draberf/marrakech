@@ -220,3 +220,29 @@ test('horizontal carpet placement', () => {
 
     expect(board.top_carpets.length).toBe(1);
 })
+// BOARD PLACEMENT
+
+function setUpBoard(): Board {
+    let board = new Board();
+    
+    board.placeCarpet(new Carpet(1,1,false,Color.YELLOW));
+    board.placeCarpet(new Carpet(3,0,true,Color.YELLOW));
+    board.placeCarpet(new Carpet(4,1,false,Color.ORANGE));
+    
+    board.placeCarpet(new Carpet(1,2,false,Color.RED));
+    board.placeCarpet(new Carpet(3,2,false,Color.ORANGE));
+    board.placeCarpet(new Carpet(1,2,true,Color.ORANGE));
+    board.placeCarpet(new Carpet(4,2,false,Color.BLUE));
+    
+    board.placeCarpet(new Carpet(2,3,true,Color.YELLOW));
+    board.placeCarpet(new Carpet(3,3,true,Color.RED));
+    board.placeCarpet(new Carpet(5,3,true,Color.BLUE));
+    
+    board.placeCarpet(new Carpet(1,4,true,Color.YELLOW));
+    board.placeCarpet(new Carpet(3,4,false,Color.RED));
+    board.placeCarpet(new Carpet(4,4,true,Color.RED));
+    
+    board.placeCarpet(new Carpet(4,5,false,Color.BLUE));
+
+    return board;
+}
