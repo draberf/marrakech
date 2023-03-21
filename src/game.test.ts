@@ -79,6 +79,11 @@ test('constructs player', () => {
     expect(player.dirhams).toBe(30);
 })
 
+test('player has top color', () => {
+    let player: Player = new Player([Color.YELLOW], 30);
+    expect(player.getTopCarpet()).toBe(Color.YELLOW);
+})
+
 test('player receives money', () => {
     let player: Player = new Player([], 30);
     player.receive(15);
