@@ -251,8 +251,6 @@ function setUpBoard(): Board {
 test('check top carpets mid-game', () => {
     let board = setUpBoard();
 
-    expect(board.top_carpets).toBe([]);
-
     let expectedTopCarpets: Array<Carpet> = [
         new Carpet(1,1,false),
         new Carpet(1,2,true),
