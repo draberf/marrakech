@@ -279,3 +279,29 @@ test('check top carpets mid-game', () => {
         expect(board.overlapsTopCarpet(carpet)).toBe(false);
     }
 })
+
+test('find contiguous area', () => {
+    let board = setUpBoard();
+
+    function matchExpectedAreas(expected: Array<[number,number]>): void {
+        expect(board.findContiguousUnderAssam().length).toBe(expected.length);
+        for (let [x,y] of expected) {
+            expect(board.findContiguousUnderAssam()).toContain(board.index(x,y));
+        }
+    }
+
+    matchExpectedAreas([[3,3], [3,4], [4,4]])
+
+    board.turnAssam(false);
+    board.turnAssam(false);
+    board.moveAssam(1);
+    matchExpectedAreas([[3,2]]);
+
+    board.turnAssam(true);
+    board.moveAssam(2);
+    matchExpectedAreas([[4,2], [5,2], [5,3], [5,4], [5,5], [4,5]]);
+    
+    board.moveAssam(1);
+    matchExpectedAreas([]);
+
+})
