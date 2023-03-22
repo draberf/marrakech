@@ -400,10 +400,10 @@ export class Board {
      * 
      * @returns The total number of contiguous tiles
      */
-    findContiguousUnderAssam(): number {
+    findContiguousUnderAssam(): Array<Number> {
         
         let color = this.color(this.assam_x, this.assam_y);
-        if (color == Color.NONE) { return 0; }
+        if (color == Color.NONE) { return []; }
         
         let queue: Array<[number,number]> = [[this.assam_x,this.assam_y]];
         let visited: Array<number> = [];
@@ -430,7 +430,7 @@ export class Board {
             queue.push([x,   y+1]);
         }
 
-        return visited.length;
+        return visited;
     }
     
 }
