@@ -305,3 +305,49 @@ test('find contiguous area', () => {
     matchExpectedAreas([]);
 
 })
+
+test('find basic positions', () => {
+    let board = new Board();
+
+    board.assam_x = 2;
+    board.assam_y = 4;
+
+    let positions: Array<Carpet> = board.getValidPositions();
+
+    let horizontals: Array<[number, number]> = [
+        [1,3],
+        [2,3],
+        [0,4],
+        [3,4],
+        [1,5],
+        [2,5]
+    ]
+
+    let verticals: Array<[number, number]> = [
+        [1,3],
+        [1,4],
+        [2,2],
+        [2,5],
+        [3,3],
+        [3,4]
+    ]
+
+    let assignments: Array<[Array<[number,number]>, boolean]>
+        = [[horizontals, false], [verticals, true]]
+
+    function isFakeCarpetInArray(elem: [number,number,boolean], array: Array<Carpet>): boolean {
+        let [x, y, orientation] = elem;
+        for (let carpet of array) {
+            if (carpet.x == x && carpet.y == y && carpet.isVertical == orientation) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    for (let [array, orientation] of assignments) {
+        for (let [x,y] of array) {
+            expect(isFakeCarpetInArray([x,y,orientation], positions)).toBe(true);
+        }
+    }
+})
