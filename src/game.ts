@@ -201,7 +201,7 @@ export class Board {
         for (let top_carpet of this.top_carpets) {
             if (carpet.x == top_carpet.x && 
                 carpet.y == top_carpet.y &&
-                carpet.isVertical == carpet.isVertical) {
+                carpet.isVertical == top_carpet.isVertical) {
                     return true
                 }
         }
