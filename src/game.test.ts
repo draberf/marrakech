@@ -221,7 +221,7 @@ test('horizontal carpet placement', () => {
     expect(board.top_carpets.length).toBe(1);
 })
 
-// BOARD PLACEMENT
+// BOARD GAMEPLAY
 
 function setUpBoard(): Board {
     let board = new Board();
