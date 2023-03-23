@@ -437,19 +437,19 @@ export class Board {
 
 export class Game {
 
-    players: Array<string>;
+    players: Array<Player>;
     playercount: number;
 
     board: Board;
 
     turn: number;
 
-    next_player: string;
+    next_player: number;
     next_action: Action;
 
     last_rolled: number = 0;
 
-    constructor (players: Array<string>) {
+    constructor (players: Array<Player>) {
 
         this.players = players;
 
@@ -461,7 +461,7 @@ export class Game {
             throw Error("Too many players to start the game.");
         }
 
-        this.next_player = players[0];
+        this.next_player = 0;
         this.next_action = Action.TURN;
         
         this.playercount = players.length;
