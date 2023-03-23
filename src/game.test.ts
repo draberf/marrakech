@@ -419,3 +419,18 @@ test('OOB placement lower right', () => {
         }
     }
 })
+
+test('overlapping placement condition', () => {
+    let board = setUpBoard();
+
+    board.assam_x = 2;
+    board.assam_y = 2;
+
+    let positions = board.getValidPositions();
+
+    expect(positions.length).toBe(9);
+
+    expect(isFakeCarpetInArray([1,1,false],positions)).toBe(false);
+    expect(isFakeCarpetInArray([1,2,true ],positions)).toBe(false);
+    expect(isFakeCarpetInArray([2,3,true ],positions)).toBe(false);
+})
