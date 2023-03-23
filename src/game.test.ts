@@ -450,7 +450,7 @@ test('overlapping placement condition', () => {
 
 // GAME CREATION
 
-import { Game } from './game';
+import { Game, Action } from './game';
 
 test('error on small game', () => {
     expect(() => {new Game([new Player([], 30)])}).toThrow();
@@ -467,4 +467,21 @@ test('error on big game', () => {
             new Player([], 30)    
         ]);
     }).toThrow();
+})
+
+test('legitimate game constructor', () => {
+
+    let players = [
+        new Player(Array<Color>(15).fill(Color.RED), 30),
+        new Player(Array<Color>(15).fill(Color.YELLOW), 30),
+        new Player(Array<Color>(15).fill(Color.BLUE), 30),
+    ];
+
+    let game = new Game(players);
+
+    expect(game.players).toEqual(players);
+    expect(game.next_player).toBe(0);
+    expect(game.next_action).toBe(Action.TURN);
+    expect(game.playercount).toBe(3);
+    expect(game.turn).toBe(0);
 })
