@@ -457,6 +457,10 @@ export class Game {
             throw Error("Not enough players to start the game.");
         }
 
+        if (players.length > 4) {
+            throw Error("Too many players to start the game.");
+        }
+
         this.next_player = players[0];
         this.next_action = Action.TURN;
         
