@@ -207,7 +207,7 @@ test('horizontal carpet placement', () => {
     expect(board.top_carpets.length).toBe(1);
 })
 
-test('horizontal carpet placement', () => {
+test('vertical carpet placement', () => {
     let board = new Board();
 
     board.placeCarpet(new Carpet(5,4,true,Color.ORANGE));
