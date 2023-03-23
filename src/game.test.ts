@@ -447,3 +447,24 @@ test('overlapping placement condition', () => {
     expect(isFakeCarpetInArray([1,2,true ],positions)).toBe(false);
     expect(isFakeCarpetInArray([2,3,true ],positions)).toBe(false);
 })
+
+// GAME CREATION
+
+import { Game } from './game';
+
+test('error on small game', () => {
+    expect(() => {new Game([new Player([], 30)])}).toThrow();
+})
+
+test('error on big game', () => {
+    
+    expect(() => {
+        new Game([
+            new Player([], 30),    
+            new Player([], 30),    
+            new Player([], 30),    
+            new Player([], 30),    
+            new Player([], 30)    
+        ]);
+    }).toThrow();
+})
