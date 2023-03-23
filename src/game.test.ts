@@ -342,6 +342,8 @@ test('find basic positions', () => {
         [3,4]
     ]
 
+    expect(positions.length).toBe(horizontals.length+verticals.length);
+
     let assignments: Array<[Array<[number,number]>, boolean]>
         = [[horizontals, false], [verticals, true]]
 
@@ -372,6 +374,8 @@ test('OOB placement upper-left', () => {
         [2,0],
         [1,1]
     ]
+    
+    expect(positions.length).toBe(horizontals.length+verticals.length);
 
     let assignments: Array<[Array<[number,number]>, boolean]>
     = [[horizontals, false], [verticals, true]]
