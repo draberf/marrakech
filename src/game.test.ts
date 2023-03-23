@@ -306,6 +306,19 @@ test('find contiguous area', () => {
 
 })
 
+test('check for contiguous OOB', () => {
+    let board = new Board();
+
+    board.placeCarpet(new Carpet(3,3,false,Color.RED));
+    board.placeCarpet(new Carpet(5,3,false,Color.RED));
+    board.placeCarpet(new Carpet(3,3,true,Color.RED));
+    board.placeCarpet(new Carpet(3,5,true,Color.RED));
+
+    let contig = board.findContiguousUnderAssam();
+
+    expect(contig.length).toBe(7);
+})
+
 function isFakeCarpetInArray(elem: [number,number,boolean], array: Array<Carpet>): boolean {
     let [x, y, orientation] = elem;
     for (let carpet of array) {
