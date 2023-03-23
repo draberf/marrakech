@@ -306,6 +306,16 @@ test('find contiguous area', () => {
 
 })
 
+function isFakeCarpetInArray(elem: [number,number,boolean], array: Array<Carpet>): boolean {
+    let [x, y, orientation] = elem;
+    for (let carpet of array) {
+        if (carpet.x == x && carpet.y == y && carpet.isVertical == orientation) {
+            return true;
+        }
+    }
+    return false;
+}
+
 test('find basic positions', () => {
     let board = new Board();
 
@@ -335,19 +345,41 @@ test('find basic positions', () => {
     let assignments: Array<[Array<[number,number]>, boolean]>
         = [[horizontals, false], [verticals, true]]
 
-    function isFakeCarpetInArray(elem: [number,number,boolean], array: Array<Carpet>): boolean {
-        let [x, y, orientation] = elem;
-        for (let carpet of array) {
-            if (carpet.x == x && carpet.y == y && carpet.isVertical == orientation) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     for (let [array, orientation] of assignments) {
         for (let [x,y] of array) {
             expect(isFakeCarpetInArray([x,y,orientation], positions)).toBe(true);
         }
     }
+})
+
+test('OOB placement upper-left', () => {
+    let board = new Board();
+
+    board.assam_x = 1;
+    board.assam_y = 0;
+
+    let positions: Array<Carpet> = board.getValidPositions();
+
+    let horizontals: Array<[number, number]> = [
+        [2,0],
+        [0,1],
+        [1,1]
+    ]
+
+    let verticals: Array<[number, number]> = [
+        [0,0],
+        [2,0],
+        [1,1]
+    ]
+
+    let assignments: Array<[Array<[number,number]>, boolean]>
+    = [[horizontals, false], [verticals, true]]
+
+    for (let [array, orientation] of assignments) {
+        for (let [x,y] of array) {
+            expect(isFakeCarpetInArray([x,y,orientation], positions)).toBe(true);
+        }
+    }
+
 })
