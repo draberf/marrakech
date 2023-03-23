@@ -447,7 +447,7 @@ export class Game {
     next_player: number;
     next_action: Action;
 
-    last_rolled: number = 0;
+    last_rolled: number = -1;
 
     constructor (players: Array<Player>) {
 
