@@ -374,7 +374,7 @@ test('OOB placement upper-left', () => {
         [2,0],
         [1,1]
     ]
-    
+
     expect(positions.length).toBe(horizontals.length+verticals.length);
 
     let assignments: Array<[Array<[number,number]>, boolean]>
@@ -386,4 +386,36 @@ test('OOB placement upper-left', () => {
         }
     }
 
+})
+
+test('OOB placement lower right', () => {
+    let board = new Board();
+
+    board.assam_x = 6;
+    board.assam_y = 5;
+
+    let positions = board.getValidPositions();
+
+    let horizontals: Array<[number, number]> = [
+        [5,4],
+        [4,5],
+        [5,6]
+    ];
+
+    let verticals: Array<[number, number]> = [
+        [6,3],
+        [5,4],
+        [5,5]
+    ];
+
+    expect(positions.length).toBe(horizontals.length+verticals.length);
+  
+    let assignments: Array<[Array<[number,number]>, boolean]>
+    = [[horizontals, false], [verticals, true]]
+
+    for (let [array, orientation] of assignments) {
+        for (let [x,y] of array) {
+            expect(isFakeCarpetInArray([x,y,orientation], positions)).toBe(true);
+        }
+    }
 })
