@@ -215,8 +215,8 @@ export class Board {
     placeCarpet(carpet: Carpet): void {
 
         // cover board
-        let x = carpet.x;
-        let y = carpet.y;
+        const x = carpet.x;
+        const y = carpet.y;
         this.grid[y][x] = carpet.color;
 
         if (carpet.isVertical) {
