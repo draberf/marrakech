@@ -73,13 +73,13 @@ export function checkOverlap(carpet1: Carpet, carpet2: Carpet): boolean {
     }
 
     // other options
-    let carpet1_aux: {x: number, y: number} = carpet1.getSecondTile();
+    const carpet1_aux: {x: number, y: number} = carpet1.getSecondTile();
     
     if (carpet1_aux.x == carpet2.x && carpet1_aux.y == carpet2.y) {
         return true;
     }
 
-    let carpet2_aux: {x: number, y: number} = carpet2.getSecondTile();
+    const carpet2_aux: {x: number, y: number} = carpet2.getSecondTile();
 
     if (carpet1.x == carpet2_aux.x && carpet1.y == carpet2_aux.y) {
         return true;
