@@ -3,13 +3,13 @@
 import {Color, Carpet, checkOverlap, Direction} from './game';
 
 test('constructs carpet', () => {
-    let carpet: Carpet = new Carpet(0,0);
+    const carpet: Carpet = new Carpet(0,0);
     expect(carpet.color).toBe(Color.NONE);
     expect(carpet.isVertical).toBe(false);
 })
 
 test('constructs vertical carpet with color', () => {
-    let carpet: Carpet = new Carpet(1,2,true,Color.RED);
+    const carpet: Carpet = new Carpet(1,2,true,Color.RED);
     expect(carpet.x).toBe(1);
     expect(carpet.y).toBe(2);
     expect(carpet.isVertical).toBe(true);
@@ -17,18 +17,18 @@ test('constructs vertical carpet with color', () => {
 })
 
 test('horizontal carpet second tile has good offset', () => {
-    let carpet: Carpet = new Carpet(3,3,false);
+    const carpet: Carpet = new Carpet(3,3,false);
     expect(carpet.getSecondTile()).toEqual({x: 4, y: 3});
 })
 
 test('vertical carpet second tile has good offset', () => {
-    let carpet: Carpet = new Carpet(4,4,true);
+    const carpet: Carpet = new Carpet(4,4,true);
     expect(carpet.getSecondTile()).toEqual({x: 4, y: 5});
 })
 
 test('carpets overlap or don\'t', () => {
     // create a list of carpets one way or another
-    let carpets: Array<Carpet> = [];
+    const carpets: Array<Carpet> = [];
     carpets.push(new Carpet(0,0,false));
     carpets.push(new Carpet(1,0,false));
     carpets.push(new Carpet(2,0,false));
@@ -42,7 +42,7 @@ test('carpets overlap or don\'t', () => {
     carpets.push(new Carpet(-1,0,true));
     
     // create expected pairings
-    let pairings: Array<Array<boolean>> = [
+    const pairings: Array<Array<boolean>> = [
         // horizontal                 |      vertical
         [true,  false,  false,  false,  true,   false,  false,  true,   false],
         [       true,   false,  false,  false,  false,  false,  true,   false],
@@ -55,7 +55,7 @@ test('carpets overlap or don\'t', () => {
         [                                                               false]
     ]
 
-    let carpet_count: number = carpets.length;
+    const carpet_count: number = carpets.length;
     if (pairings.length != carpet_count-1) {
         throw Error("Not one fewer expected pairings than carpets.");
     }
@@ -74,30 +74,30 @@ test('carpets overlap or don\'t', () => {
 import { Player } from './game';
 
 test('constructs player', () => {
-    let player: Player = new Player([Color.RED], 30);
+    const player: Player = new Player([Color.RED], 30);
     expect(player.deck).toContain(Color.RED);
     expect(player.dirhams).toBe(30);
 })
 
 test('player has top color', () => {
-    let player: Player = new Player([Color.YELLOW], 30);
+    const player: Player = new Player([Color.YELLOW], 30);
     expect(player.getTopCarpet()).toBe(Color.YELLOW);
 })
 
 test('player receives money', () => {
-    let player: Player = new Player([], 30);
+    const player: Player = new Player([], 30);
     player.receive(15);
     expect(player.dirhams).toBe(45);
 })
 
 test('player pays money', () => {
-    let player: Player = new Player([], 30);
+    const player: Player = new Player([], 30);
     player.pay(20);
     expect(player.dirhams).toBe(10);
 })
 
 test('player overpays', () => {
-    let player: Player = new Player([], 30);
+    const player: Player = new Player([], 30);
     player.pay(50);
     expect(player.dirhams).toBe(0);
 })
@@ -106,7 +106,7 @@ test('player overpays', () => {
 import { Board } from './game';
 
 test('board constructor', () => {
-    let board = new Board();
+    const board = new Board();
     
     expect(board.assam_x).toBe(3);
     expect(board.assam_y).toBe(3);
@@ -120,7 +120,7 @@ test('board constructor', () => {
 
 
 test('board indices', () => {
-    let board = new Board();
+    const board = new Board();
     
     expect(board.index(0,0)).toBe(0);
     expect(board.index(1,0)).toBe(1);
@@ -130,7 +130,7 @@ test('board indices', () => {
 
 
 test('board functions on empty', () => {
-    let board = new Board();
+    const board = new Board();
     
     expect(board.color(0,0)).toBe(Color.NONE);
     expect(board.color(6,6)).toBe(Color.NONE);
@@ -139,7 +139,7 @@ test('board functions on empty', () => {
 })
 
 test('simple assam movement', () => {
-    let board = new Board();
+    const board = new Board();
     
     board.turnAssam(false);
     expect(board.assam_x).toBe(3);
@@ -156,7 +156,7 @@ test('simple assam movement', () => {
 })
 
 test('assam turns around', () => {
-    let board = new Board();
+    const board = new Board();
     board.turnAssam(false);
     board.turnAssam(false);
     
@@ -183,7 +183,7 @@ test('assam turns around', () => {
 })
 
 test('assam turns around (inverse)', () => {
-    let board = new Board();
+    const board = new Board();
     board.primary_diagonal_loop = false;
 
     board.moveAssam(5);
@@ -194,7 +194,7 @@ test('assam turns around (inverse)', () => {
 })
 
 test('horizontal carpet placement', () => {
-    let board = new Board();
+    const board = new Board();
 
     board.placeCarpet(new Carpet(1,1,false,Color.RED));
 
@@ -208,7 +208,7 @@ test('horizontal carpet placement', () => {
 })
 
 test('vertical carpet placement', () => {
-    let board = new Board();
+    const board = new Board();
 
     board.placeCarpet(new Carpet(5,4,true,Color.ORANGE));
 
@@ -224,7 +224,7 @@ test('vertical carpet placement', () => {
 // BOARD GAMEPLAY
 
 function setUpBoard(): Board {
-    let board = new Board();
+    const board = new Board();
     
     board.placeCarpet(new Carpet(1,1,false,Color.YELLOW));
     board.placeCarpet(new Carpet(3,0,true,Color.YELLOW));
@@ -249,9 +249,9 @@ function setUpBoard(): Board {
 }
 
 test('check top carpets mid-game', () => {
-    let board = setUpBoard();
+    const board = setUpBoard();
 
-    let expectedTopCarpets: Array<Carpet> = [
+    const expectedTopCarpets: Array<Carpet> = [
         new Carpet(1,1,false),
         new Carpet(1,2,true),
         new Carpet(1,4,true),
@@ -263,7 +263,7 @@ test('check top carpets mid-game', () => {
         new Carpet(5,3,true)
     ];
 
-    let overlappedCarpets: Array<Carpet> = [
+    const overlappedCarpets: Array<Carpet> = [
         new Carpet(1,2,false),
         new Carpet(3,2,false),
         new Carpet(3,3,true),
@@ -281,7 +281,7 @@ test('check top carpets mid-game', () => {
 })
 
 test('find contiguous area', () => {
-    let board = setUpBoard();
+    const board = setUpBoard();
 
     function matchExpectedAreas(expected: Array<[number,number]>): void {
         expect(board.findContiguousUnderAssam().length).toBe(expected.length);
@@ -307,20 +307,20 @@ test('find contiguous area', () => {
 })
 
 test('check for contiguous OOB', () => {
-    let board = new Board();
+    const board = new Board();
 
     board.placeCarpet(new Carpet(3,3,false,Color.RED));
     board.placeCarpet(new Carpet(5,3,false,Color.RED));
     board.placeCarpet(new Carpet(3,3,true,Color.RED));
     board.placeCarpet(new Carpet(3,5,true,Color.RED));
 
-    let contig = board.findContiguousUnderAssam();
+    const contig = board.findContiguousUnderAssam();
 
     expect(contig.length).toBe(7);
 })
 
 function isFakeCarpetInArray(elem: [number,number,boolean], array: Array<Carpet>): boolean {
-    let [x, y, orientation] = elem;
+    const [x, y, orientation] = elem;
     for (let carpet of array) {
         if (carpet.x == x && carpet.y == y && carpet.isVertical == orientation) {
             return true;
@@ -330,14 +330,14 @@ function isFakeCarpetInArray(elem: [number,number,boolean], array: Array<Carpet>
 }
 
 test('find basic positions', () => {
-    let board = new Board();
+    const board = new Board();
 
     board.assam_x = 2;
     board.assam_y = 4;
 
-    let positions: Array<Carpet> = board.getValidPositions();
+    const positions: Array<Carpet> = board.getValidPositions();
 
-    let horizontals: Array<[number, number]> = [
+    const horizontals: Array<[number, number]> = [
         [1,3],
         [2,3],
         [0,4],
@@ -346,7 +346,7 @@ test('find basic positions', () => {
         [2,5]
     ]
 
-    let verticals: Array<[number, number]> = [
+    const verticals: Array<[number, number]> = [
         [1,3],
         [1,4],
         [2,2],
@@ -357,7 +357,7 @@ test('find basic positions', () => {
 
     expect(positions.length).toBe(horizontals.length+verticals.length);
 
-    let assignments: Array<[Array<[number,number]>, boolean]>
+    const assignments: Array<[Array<[number,number]>, boolean]>
         = [[horizontals, false], [verticals, true]]
 
 
@@ -369,20 +369,20 @@ test('find basic positions', () => {
 })
 
 test('OOB placement upper-left', () => {
-    let board = new Board();
+    const board = new Board();
 
     board.assam_x = 1;
     board.assam_y = 0;
 
-    let positions: Array<Carpet> = board.getValidPositions();
+    const positions: Array<Carpet> = board.getValidPositions();
 
-    let horizontals: Array<[number, number]> = [
+    const horizontals: Array<[number, number]> = [
         [2,0],
         [0,1],
         [1,1]
     ]
 
-    let verticals: Array<[number, number]> = [
+    const verticals: Array<[number, number]> = [
         [0,0],
         [2,0],
         [1,1]
@@ -390,7 +390,7 @@ test('OOB placement upper-left', () => {
 
     expect(positions.length).toBe(horizontals.length+verticals.length);
 
-    let assignments: Array<[Array<[number,number]>, boolean]>
+    const assignments: Array<[Array<[number,number]>, boolean]>
     = [[horizontals, false], [verticals, true]]
 
     for (let [array, orientation] of assignments) {
@@ -402,20 +402,20 @@ test('OOB placement upper-left', () => {
 })
 
 test('OOB placement lower right', () => {
-    let board = new Board();
+    const board = new Board();
 
     board.assam_x = 6;
     board.assam_y = 5;
 
-    let positions = board.getValidPositions();
+    const positions = board.getValidPositions();
 
-    let horizontals: Array<[number, number]> = [
+    const horizontals: Array<[number, number]> = [
         [5,4],
         [4,5],
         [5,6]
     ];
 
-    let verticals: Array<[number, number]> = [
+    const verticals: Array<[number, number]> = [
         [6,3],
         [5,4],
         [5,5]
@@ -423,7 +423,7 @@ test('OOB placement lower right', () => {
 
     expect(positions.length).toBe(horizontals.length+verticals.length);
   
-    let assignments: Array<[Array<[number,number]>, boolean]>
+    const assignments: Array<[Array<[number,number]>, boolean]>
     = [[horizontals, false], [verticals, true]]
 
     for (let [array, orientation] of assignments) {
@@ -434,12 +434,12 @@ test('OOB placement lower right', () => {
 })
 
 test('overlapping placement condition', () => {
-    let board = setUpBoard();
+    const board = setUpBoard();
 
     board.assam_x = 2;
     board.assam_y = 2;
 
-    let positions = board.getValidPositions();
+    const positions = board.getValidPositions();
 
     expect(positions.length).toBe(9);
 
@@ -471,13 +471,13 @@ test('error on big game', () => {
 
 test('legitimate game constructor', () => {
 
-    let players = [
+    const players = [
         new Player(Array<Color>(15).fill(Color.RED), 30),
         new Player(Array<Color>(15).fill(Color.YELLOW), 30),
         new Player(Array<Color>(15).fill(Color.BLUE), 30),
     ];
 
-    let game = new Game(players);
+    const game = new Game(players);
 
     expect(game.players).toEqual(players);
     expect(game.next_player).toBe(0);
