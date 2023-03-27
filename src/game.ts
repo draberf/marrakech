@@ -402,7 +402,7 @@ export class Board {
      */
     findContiguousUnderAssam(): Array<Number> {
         
-        let color = this.color(this.assam_x, this.assam_y);
+        const color = this.color(this.assam_x, this.assam_y);
         if (color == Color.NONE) { return []; }
         
         let queue: Array<[number,number]> = [[this.assam_x,this.assam_y]];
@@ -412,12 +412,12 @@ export class Board {
 
             // using the assertion operator '!'
             // if the queue was empty, this branch wouldn't start
-            let [x,y]: [number,number] = queue.pop()!;
+            const [x,y]: [number,number] = queue.pop()!;
             
             // check for failures
             if (this.isOutOfBounds(x,y))  { continue; }
             if (this.color(x,y) != color) { continue; }
-            let index = this.index(x, y);
+            const index = this.index(x, y);
             if (visited.includes(index)) { continue; }            
 
             // extend visited
