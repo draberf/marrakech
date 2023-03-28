@@ -1,8 +1,9 @@
 'use strict';
 
 
-enum Direction {EAST, NORTH, WEST, SOUTH};
-enum Color {NONE, RED, BLUE, YELLOW, ORANGE};
+export enum Direction {EAST, NORTH, WEST, SOUTH};
+export enum Color {NONE, RED, BLUE, YELLOW, ORANGE};
+export enum Action {TURN, ROLL, PLACE};
 
 /** Represents an in-game Carpet object.
  * 
@@ -13,14 +14,20 @@ enum Color {NONE, RED, BLUE, YELLOW, ORANGE};
  * 
  * @param {Color} color The color of the carpet
  */
-class Carpet {
+export class Carpet {
 
     x: number;
     y: number;
     isVertical: boolean = false;
     color: Color = Color.NONE;
 
-    constructor(x: number, y: number, isVertical?: boolean, color?: Color) { }
+    constructor(x: number, y: number, isVertical?: boolean, color?: Color) {
+        this.x = x;
+        this.y = y;
+
+        if (isVertical !== undefined) { this.isVertical = isVertical; }
+        if (color !== undefined) { this.color = color; }
+    }
 
     /** 
      * 
@@ -54,7 +61,7 @@ function createBoard2D<T>(width: number, height: number, value: T): Array<Array<
  * 
  * @returns {boolean} Whether the carpets overlap.
  */
-function checkOverlap(carpet1: Carpet, carpet2: Carpet): boolean {
+export function checkOverlap(carpet1: Carpet, carpet2: Carpet): boolean {
 
     // definite miss:
     if (Math.abs(carpet1.x - carpet2.x) > 1) { return false; }
@@ -66,13 +73,13 @@ function checkOverlap(carpet1: Carpet, carpet2: Carpet): boolean {
     }
 
     // other options
-    let carpet1_aux: {x: number, y: number} = carpet1.getSecondTile();
+    const carpet1_aux: {x: number, y: number} = carpet1.getSecondTile();
     
     if (carpet1_aux.x == carpet2.x && carpet1_aux.y == carpet2.y) {
         return true;
     }
 
-    let carpet2_aux: {x: number, y: number} = carpet2.getSecondTile();
+    const carpet2_aux: {x: number, y: number} = carpet2.getSecondTile();
 
     if (carpet1.x == carpet2_aux.x && carpet1.y == carpet2_aux.y) {
         return true;
@@ -89,11 +96,14 @@ function checkOverlap(carpet1: Carpet, carpet2: Carpet): boolean {
  * 
  * 
  */
-class Player {
+export class Player {
 
     deck: Array<Color>;
     dirhams: number;
-    constructor (deck: Array<Color>, dirhams: number) { }
+    constructor (deck: Array<Color>, dirhams: number) {
+        this.deck = deck;
+        this.dirhams = dirhams;
+    }
 
     getTopCarpet(): Color {
         return this.deck[0];
@@ -112,7 +122,7 @@ class Player {
 /** Represents the board in a game state.
  * 
  */
-class Board {
+export class Board {
 
     assam_x: number;
     assam_y: number;
@@ -122,6 +132,7 @@ class Board {
     height: number;
 
     grid: Array<Array<Color>>;
+    dir_grid: Array<Array<Direction>>;
 
     top_carpets: Array<Carpet>;
 
@@ -130,12 +141,13 @@ class Board {
     constructor () {
         this.assam_x = 3;
         this.assam_y = 3;
-        this.assam_dir = 3; // south
+        this.assam_dir = Direction.SOUTH; // south
 
         this.width = 7;
         this.height = 7;
 
         this.grid = createBoard2D(this.width, this.height, Color.NONE);
+        this.dir_grid = createBoard2D(this.width, this.height, Direction.NORTH);
 
         this.top_carpets = [];
 
@@ -154,6 +166,17 @@ class Board {
      */
     color(x: number, y: number): Color {
         return this.grid[y][x];
+    }
+
+    /** Returns the direction of carpet tile at a given board tile
+     * 
+     * @param x The x-coordinate of the tile
+     * @param y The y-coordinate of the tile
+     * 
+     * @returns The tile direction
+     */
+    direction(x: number, y: number): Direction {
+        return this.dir_grid[y][x];
     }
 
     /** Transforms coordinates into a unique index.
@@ -178,7 +201,7 @@ class Board {
         for (let top_carpet of this.top_carpets) {
             if (carpet.x == top_carpet.x && 
                 carpet.y == top_carpet.y &&
-                carpet.isVertical == carpet.isVertical) {
+                carpet.isVertical == top_carpet.isVertical) {
                     return true
                 }
         }
@@ -192,12 +215,22 @@ class Board {
     placeCarpet(carpet: Carpet): void {
 
         // cover board
-        let x = carpet.x;
-        let y = carpet.y;
+        const x = carpet.x;
+        const y = carpet.y;
         this.grid[y][x] = carpet.color;
-        if (carpet.isVertical) { y += 1; }
-        else { x += 1; }
-        this.grid[y][x] = carpet.color;
+
+        if (carpet.isVertical) {
+            this.grid[y+1][x] = carpet.color;
+            
+            this.dir_grid[y][x] = Direction.NORTH;
+            this.dir_grid[y+1][x] = Direction.SOUTH;
+        }
+        else {
+            this.grid[y][x+1] = carpet.color;
+
+            this.dir_grid[y][x] = Direction.WEST;
+            this.dir_grid[y][x+1] = Direction.EAST;
+        }
 
     
         // remove potential top carpets by filtering
@@ -261,8 +294,8 @@ class Board {
      */
     isOutOfBounds(x: number, y: number): boolean {
         return (
-            x < 0 || x > this.width ||
-            y < 0 || y > this.height);
+            x < 0 || x >= this.width ||
+            y < 0 || y >= this.height);
     }
 
     /** Checks if Assam has stepped out of bounds
@@ -298,7 +331,7 @@ class Board {
      * @param right If Assam should turn right (turns left if false)
      */
     turnAssam(right: boolean): void {
-        this.assam_dir += (right ? -1 : 1);
+        this.assam_dir += (right ? -1 : 1) + 4;
         this.assam_dir %= 4;
     }
 
@@ -308,19 +341,19 @@ class Board {
      */
     moveAssamStep(checkOutOfBounds: boolean): void {
         // right
-        if (this.assam_dir == 0) {
+        if (this.assam_dir == Direction.EAST) {
             this.assam_x += 1;
         }
         // up
-        if (this.assam_dir == 1) {
+        if (this.assam_dir == Direction.NORTH) {
             this.assam_y -= 1;
         }
         // left
-        if (this.assam_dir == 2) {
+        if (this.assam_dir == Direction.WEST) {
             this.assam_x -= 1;
         }
         // down
-        if (this.assam_dir == 3) {
+        if (this.assam_dir == Direction.SOUTH) {
             this.assam_y += 1;
         }
 
@@ -330,10 +363,15 @@ class Board {
         if (this.isAssamOutOfBounds()) {
             
             // set turning direction
-            let right = true;
+            let right: boolean;
+            if (this.assam_x < 0 || this.assam_x >= this.height) {
+                right = true;
+            } else {
+                right = false;
+            }
             for (let boolean of [
-                this.assam_x % 2 == 1,
-                this.assam_y % 2 == 1,
+                this.assam_x % 2 != 0,
+                this.assam_y % 2 != 0,
                 this.primary_diagonal_loop]) {
                     right = (boolean ? !right : right);
                 }
@@ -362,10 +400,10 @@ class Board {
      * 
      * @returns The total number of contiguous tiles
      */
-    findContiguousUnderAssam(): number {
+    findContiguousUnderAssam(): Array<Number> {
         
-        let color = this.color(this.assam_x, this.assam_y);
-        if (color == Color.NONE) { return 0; }
+        const color = this.color(this.assam_x, this.assam_y);
+        if (color == Color.NONE) { return []; }
         
         let queue: Array<[number,number]> = [[this.assam_x,this.assam_y]];
         let visited: Array<number> = [];
@@ -374,12 +412,12 @@ class Board {
 
             // using the assertion operator '!'
             // if the queue was empty, this branch wouldn't start
-            let [x,y]: [number,number] = queue.pop()!;
+            const [x,y]: [number,number] = queue.pop()!;
             
             // check for failures
             if (this.isOutOfBounds(x,y))  { continue; }
             if (this.color(x,y) != color) { continue; }
-            let index = this.index(x, y);
+            const index = this.index(x, y);
             if (visited.includes(index)) { continue; }            
 
             // extend visited
@@ -392,21 +430,39 @@ class Board {
             queue.push([x,   y+1]);
         }
 
-        return visited.length;
+        return visited;
     }
     
 }
 
-class Game {
+export class Game {
 
-    players: Array<string>;
+    players: Array<Player>;
     playercount: number;
 
     board: Board;
 
     turn: number;
 
-    constructor (players: Array<string>) {
+    next_player: number;
+    next_action: Action;
+
+    last_rolled: number = -1;
+
+    constructor (players: Array<Player>) {
+
+        this.players = players;
+
+        if (players.length < 2) {
+            throw Error("Not enough players to start the game.");
+        }
+
+        if (players.length > 4) {
+            throw Error("Too many players to start the game.");
+        }
+
+        this.next_player = 0;
+        this.next_action = Action.TURN;
         
         this.playercount = players.length;
 
