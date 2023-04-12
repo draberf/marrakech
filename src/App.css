@@ -58,3 +58,28 @@
   display: table;
 }
 
+.boardGrid {
+  display: grid;
+  width:500px;
+  grid-template-columns: repeat(9, auto);
+  grid-template-rows: repeat(9, auto);
+}
+
+.tile {
+  position:relative;
+  height: 55px;
+}
+
+.tile img {
+  display: block;
+  position:absolute;
+  max-width: 100%;
+}
+
+.floor {
+  z-index: 1;
+}
+
+.assam {
+  z-index: 2;
+}
