@@ -4,7 +4,7 @@ import './App.css';
 import { BindingElement } from 'typescript';
 
 // game state
-import { Color, Direction, Player, Game } from './game';
+import { Color, Direction, Player, Game, Carpet } from './game';
 
 // images
 import blue_half from './assets/carpets/blue.png'
@@ -62,6 +62,8 @@ type TileProp = {
 function GameWindow({ game }: GameObjectProp) {
   return <>
     <Board game={game} />
+    <PlayerArea game={game} />
+    <OpponentsArea game={game} />
   </>
 }
 
@@ -80,17 +82,50 @@ function Board({ game }: GameObjectProp) {
 }
 
 function Tile({ game, coordX, coordY }: TileProp) {
+  if (coordX < 0 || coordY < 0 || coordX >= 7 || coordY >= 7) {
+    return <div key={(coordY*9 + coordX).toString()} className="tile">
+      <img src={arc} className='floor' />
+    </div>;
+  }
+
   let content;
+
+
+  let floorSrc = empty;
+  const color = game.board.color(coordX, coordY);
+
+
+  if (color) {
+    floorSrc = Array(red_half, blue_half)[color-1]
+  }
   
   if (game.board.assam_x == coordX && game.board.assam_y == coordY) {
-    content = <><img src={empty} className='floor'/><img src = {assam} className='assam' /></>;
+    content = <><img src={floorSrc} className='floor'/><img src = {assam} className='assam' /></>;
   } else {
-    content = <img src={empty} className='floor'/>;
+    content = <img src={floorSrc} className='floor'/>;
   }
 
   return <div key={(coordY*9 + coordX).toString()} className="tile">{content}</div>;
 }
 
+function PlayerArea({ game }: GameObjectProp) {
+  // TODO: track CURRENTLY displayed player
+
+  return <>
+    <b>Player Area:</b>
+    <img src={red_half} style={{width:"10%"}}/>
+    <button>Roll</button>
+    <div>Dirhams: {game.players[0].dirhams}</div>
+  </>
+}
+
+function OpponentsArea({ game }: GameObjectProp) {
+  return <>
+  <b>Opponents:</b>
+  <img src={blue_half} style={{width:"10%"}} />
+  {game.players[1].dirhams}
+  </>
+}
 
 // change this
 export default function MockApp() {
@@ -98,6 +133,8 @@ export default function MockApp() {
     new Player([Color.RED, Color.RED], 30),
     new Player([Color.BLUE, Color.BLUE], 30)
   ]);
+
+  game.board.placeCarpet(new Carpet(4,5,true,Color.RED));
 
   return <GameWindow game={game} />
   return <div style={{position:"relative", width:"100px"}}>
