@@ -61,17 +61,36 @@ type TileProp = {
 
 function GameWindow({ game }: GameObjectProp) {
   return <>
-
+    <Board game={game} />
   </>
 }
 
 function Board({ game }: GameObjectProp) {
+  let tiles = [];
   
+  for (let y = -1; y < 8; y++) {
+    for (let x = -1; x < 8; x++) {
+      tiles.push(<Tile game={game} coordX={x} coordY={y}/>);
+    }
+  }
+
+  return <div className='boardGrid'>
+    {tiles}
+  </div>
 }
 
 function Tile({ game, coordX, coordY }: TileProp) {
+  let content;
+  
+  if (game.board.assam_x == coordX && game.board.assam_y == coordY) {
+    content = <><img src={empty} className='floor'/><img src = {assam} className='assam' /></>;
+  } else {
+    content = <img src={empty} className='floor'/>;
+  }
 
+  return <div key={(coordY*9 + coordX).toString()} className="tile">{content}</div>;
 }
+
 
 // change this
 export default function MockApp() {
