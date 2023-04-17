@@ -137,8 +137,4 @@ export default function MockApp() {
   game.board.placeCarpet(new Carpet(4,5,true,Color.RED));
 
   return <GameWindow game={game} />
-  return <div style={{position:"relative", width:"100px"}}>
-    <img src={assam} className="assam"/>
-    <img src={empty} className="floor"/>
-  </div>
 }
