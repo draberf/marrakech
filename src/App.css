@@ -138,3 +138,54 @@ body {
 }
 
 
+.options-button {
+  border-radius: 100%;
+  bottom: 5%;
+  height: 3.5rem;
+  padding: 0;
+  position: absolute;
+  right: 5%;
+  width: 3.5rem;
+}
+
+.options-cog {
+  font-size: 2rem;
+}
+
+.options {
+  background-color: #282c34;
+  height: 100vh;
+  left: 0;
+  opacity: .5;
+  position: absolute;
+  top: 0;
+  width: 100vw;
+  z-index: 10;
+}
+
+.options-modal {
+  bottom: 0;
+  height: fit-content;
+  left: 0;
+  margin: auto auto;
+  max-width: 600px;
+  padding: 1rem;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 10;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 1rem;
+}
+
+.button-menu {
+  margin: 0 auto;
+  width: 10rem;
+}
+
+.small-radio {
+  width: 4rem;
+}
