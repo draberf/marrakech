@@ -1,4 +1,3 @@
 /node_modules
 /coverage
-/carpets_design
-/src/App_tictactoe.tsx
+/build
