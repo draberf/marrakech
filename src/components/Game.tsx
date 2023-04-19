@@ -46,24 +46,56 @@ type GameObjectProp = {
 	const [gameState, setGameState] = useState(game);
   
 	return <div className='gameWindow'>
-		<StatusBar game={gameState}/>
-	  <GameArea game={gameState} />
-	  <ActionButtons game={gameState} />
-	  <PlayersArea game={gameState} />
+		<div className='row'>
+			<StatusBar game={gameState}/>
+			<div className='col-12 col-md-8'>
+				<GameArea game={gameState} />
+			</div>
+			<div className='col-12 col-md-4 d-flex flex-column justify-content-center'>
+				<div className='row'>
+					<div className='col-12'>
+						<ActionButtons game={gameState} />
+					</div>
+					<div className='col-12'>
+						<PlayersArea game={gameState} />
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
   }
 
   function StatusBar({game}: GameObjectProp) {
-	return <></>
+	return <>
+		<h2 className='text-center'>
+			Hrac cerveny - pokladani koberce
+		</h2>
+	</>
   }
 
   function ActionButtons({game}: GameObjectProp) {
-	return <></>
+	return <div className='row'>
+		<div className='col-6 col-md-12'>
+			<button className='btn btn-primary m-2 w-100'>
+				Hodit kostkou
+			</button>
+		</div>
+		<div className='col-6 col-md-12'>
+			<button className='btn btn-primary m-2 w-100'>
+				Položit koberec
+			</button>
+		</div>
+	</div>
   }
 
   function PlayersArea({game}: GameObjectProp) {
 	return <>
-
+		<div>
+			Player 1: 30 dirham
+		</div>
+		<div>
+			Player 2: 25 dirham
+		</div>
 	</>
   }
   
@@ -73,24 +105,25 @@ type GameObjectProp = {
   }
   
   function GameArea({game}: GameObjectProp) {
-	return <div className='gameArea'>
-	  <Board game={game}/>
-	</div>
+	return <Board game={game}/>
   }
 
   function Board({ game }: GameObjectProp) {
 	let tiles = [];
 	
 	for (let y = -1; y < 8; y++) {
-	  for (let x = -1; x < 8; x++) {
-		tiles.push(<Tile key={x+"-"+y} game={game} coordX={x} coordY={y}/>);
+		let row = []
+		for (let x = -1; x < 8; x++) {
+		row.push(<Tile key={x+"-"+y} game={game} coordX={x} coordY={y}/>);
 	  }
+	  tiles.push(<div className='row'>{row}</div>)
 	}
   
-	return <div className='boardArea'>
-	  <div className='boardGrid'>
+	return <div className='w-100 col-12 col-md-8 position-relative'>
+		<div id="assam" className='assam'>
+			<img className='assam-img' src={assam}/>
+		</div>
 		{tiles}
-	  </div>
 	</div>
   }
   
