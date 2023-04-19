@@ -1,6 +1,4 @@
 import React, { EventHandler, useState } from 'react';
-import logo from './logo.svg';
-import '../App.css';
 import { BindingElement } from 'typescript';
 
 // game state
@@ -48,10 +46,25 @@ type GameObjectProp = {
 	const [gameState, setGameState] = useState(game);
   
 	return <div className='gameWindow'>
+		<StatusBar game={gameState}/>
 	  <GameArea game={gameState} />
-	  <PlayerArea game={gameState} />
-	  <OpponentsArea game={gameState} />
+	  <ActionButtons game={gameState} />
+	  <PlayersArea game={gameState} />
 	</div>
+  }
+
+  function StatusBar({game}: GameObjectProp) {
+	return <></>
+  }
+
+  function ActionButtons({game}: GameObjectProp) {
+	return <></>
+  }
+
+  function PlayersArea({game}: GameObjectProp) {
+	return <>
+
+	</>
   }
   
   type ArrowProp = {
@@ -62,10 +75,6 @@ type GameObjectProp = {
   function GameArea({game}: GameObjectProp) {
 	return <div className='gameArea'>
 	  <Board game={game}/>
-	  <Arrow game={game} direction={Direction.NORTH}/>
-	  <Arrow game={game} direction={Direction.EAST}/>
-	  <Arrow game={game} direction={Direction.WEST}/>
-	  <Arrow game={game} direction={Direction.SOUTH}/>
 	</div>
   }
   
@@ -132,43 +141,9 @@ type GameObjectProp = {
 	  floorSrc = Array(red_half, blue_half)[color-1]
 	}
 	
-	if (game.board.assam_x == coordX && game.board.assam_y == coordY) {
-	  const assamDir = game.board.assam_dir;
-	  const assamTransform: string = GetDirectionalTransform(assamDir);
-	  content = <>
-		<img src={floorSrc} className='floor' style={{transform:dirTransform}}/>
-		<img src = {assam} className='assam' style={{transform:assamTransform}}/>
-	  </>;
-	} else {
-	  content = <img src={floorSrc} className='floor' alt={dirTransform} style={{transform:dirTransform}}/>;
-	}
-  
+	content = <img src={floorSrc} className='floor' alt={dirTransform} style={{transform:dirTransform}}/>;  
 	return <div key={(coordY*9 + coordX).toString()} className="tile">{content}</div>;
   }
-  
-  function PlayerArea({ game }: GameObjectProp) {
-	// TODO: track CURRENTLY displayed player
-  
-	return <div className='playerArea'>
-	  <b>Player Area:</b>
-	  <FullCarpet/>
-  
-	  <button>Roll</button>
-	  <div>Dirhams: {game.players[0].dirhams}</div>
-	</div>
-  }
-  
-  function OpponentsArea({ game }: GameObjectProp) {
-	return <div className='oppArea'>
-	<b>Opponents:</b>
-	<img src={blue_half} style={{width:"10px"}} />
-	{game.players[1].dirhams}
-	</div>
-  }
-  
-function FullCarpet() {
-	return <img src={red_full}/>
-}
   
   // change this
 export default function MockApp() {
