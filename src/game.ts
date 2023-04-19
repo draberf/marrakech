@@ -364,7 +364,7 @@ export class Board {
             
             // set turning direction
             let right: boolean;
-            if (this.assam_x < 0 || this.assam_x >= this.height) {
+            if (this.assam_x < 0 || this.assam_x >= this.width) {
                 right = true;
             } else {
                 right = false;
