@@ -77,11 +77,7 @@ type GameObjectProp = {
 	  <Board game={game}/>
 	</div>
   }
-  
-  function Arrow({game, direction}: ArrowProp) {
-	return <img src={pointer} className={'arrow arrow--'+direction}/>
-  }
-  
+
   function Board({ game }: GameObjectProp) {
 	let tiles = [];
 	
