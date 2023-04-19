@@ -2,3 +2,5 @@
 /coverage
 /build
 /carpets_design
+
+src/App_tictactoe.tsx
