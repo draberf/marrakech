@@ -50,69 +50,12 @@ body {
 
 #root {
   height: 100%;
-}
-
-
-.gameWindow {
-  display: flex;
-  flex-direction: column;
-  align-content: center;
-  justify-content: stretch;
-  height: 100%;
-  width: 100%;
-}
-
-.gameArea {
-  display: grid;
-  grid-template-columns: 6vh 54vh 6vh;
-  grid-template-rows: 6vh 54vh 6vh;
-  flex: 20 1 auto;
-}
-
-.boardArea {
-  grid-column: 2 / 3;
-  grid-row: 2 / 3;
-}
-
-.arrow {
-  width: 6vh;
-  display:block;
-}
-
-.arrow--0 {
-  grid-column: 3 / 4;
-  grid-row: 2 / 3;
-}
-
-.arrow--1 {
-  grid-column: 2 / 3;
-  grid-row: 1 / 2;
-  transform:rotate(270deg)
-}
-
-.arrow--2 {
-  grid-column: 1 / 2;
-  grid-row: 2 / 3;
-  transform:rotate(180deg)
-}
-
-.arrow--3 {
-  grid-column: 2 / 3;
-  grid-row: 3 / 4;
-  transform:rotate(90deg)
-}
-
-.boardGrid {
-
-  display: grid;
-  width: 54vh;
-  grid-template-columns: repeat(9, auto);
-  grid-template-rows: repeat(9, auto);
+  overflow: hidden;
 }
 
 .tile {
   position:relative;
-  width: 11.11111%;
+  width: calc(100% / 9);
   padding: 0;
 }
 
@@ -194,10 +137,35 @@ body {
 .assam {
   position: absolute;
   z-index: 10;
-  width: 11.11111%;
+  width: calc((100% / 9) + 2.5px);
+  top: calc((100% * 4 / 9) - 2.5px);
+  left: calc((100% * 4 / 9) - 2.5px);
 }
 
 .assam-img {
   max-width: 100%;
   max-height: 100%;
+}
+
+.assam-arrow {
+  font-size: 2em;
+  position: absolute;
+}
+
+.arrow-left {
+  top: 50%;
+  transform: translate(0%, -50%);
+  left: 80%;
+}
+
+.arrow-right {
+  top: 50%;
+  right: 100%;
+  transform: translate(50%, -50%);
+}
+
+.arrow-straight {
+  bottom: -5%;
+  left: 50%;
+  transform: translate(-50%, 50%);
 }

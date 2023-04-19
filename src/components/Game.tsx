@@ -19,6 +19,7 @@ import arc from '../assets/arc.png'
 import assam from '../assets/assam.png'
 import pointer from '../assets/pointer.png'
 import dirham from '../assets/dirham.png'
+import { FaArrowDown, FaArrowLeft, FaArrowRight } from 'react-icons/fa'
 
 const colors_half = [
   blue_half, orange_half, red_half, yellow_half
@@ -45,7 +46,7 @@ type GameObjectProp = {
   
 	const [gameState, setGameState] = useState(game);
   
-	return <div className='gameWindow'>
+	return <div className='container'>
 		<div className='row'>
 			<StatusBar game={gameState}/>
 			<div className='col-12 col-md-8'>
@@ -116,12 +117,21 @@ type GameObjectProp = {
 		for (let x = -1; x < 8; x++) {
 		row.push(<Tile key={x+"-"+y} game={game} coordX={x} coordY={y}/>);
 	  }
-	  tiles.push(<div className='row'>{row}</div>)
+	  tiles.push(<div key={y} className='row'>{row}</div>)
 	}
   
 	return <div className='w-100 col-12 col-md-8 position-relative'>
 		<div id="assam" className='assam'>
 			<img className='assam-img' src={assam}/>
+			<span className='assam-arrow arrow-left'>
+				<FaArrowRight />
+  			</span>
+			<span className='assam-arrow arrow-right'>
+			  	<FaArrowLeft />
+  			</span>
+			<span className='assam-arrow arrow-straight'>
+				<FaArrowDown />
+  			</span>
 		</div>
 		{tiles}
 	</div>
