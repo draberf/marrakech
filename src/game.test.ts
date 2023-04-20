@@ -162,23 +162,27 @@ test('assam turns around', () => {
     
     board.moveAssam(4);
     expect(board.assam_x).toBe(4);
-    expect(board.assam_y).toBe(1);
+    expect(board.assam_y).toBe(0);
     expect(board.assam_dir).toBe(Direction.SOUTH);
     
     board.turnAssam(false);
     board.moveAssam(3);
-    expect(board.assam_x).toBe(5);
-    expect(board.assam_y).toBe(0);
+    expect(board.assam_x).toBe(6);
+    expect(board.assam_y).toBe(1);
     expect(board.assam_dir).toBe(Direction.WEST);
 
-    board.moveAssam(6);
+    board.turnAssam(true);
+    board.moveAssam(1);
+    board.turnAssam(false);
+
+    board.moveAssam(7);
     expect(board.assam_x).toBe(0);
-    expect(board.assam_y).toBe(1);
+    expect(board.assam_y).toBe(0);
     expect(board.assam_dir).toBe(Direction.SOUTH);
 
     board.moveAssam(7);
     expect(board.assam_x).toBe(1);
-    expect(board.assam_y).toBe(4);
+    expect(board.assam_y).toBe(6);
     expect(board.assam_dir).toBe(Direction.NORTH);
 })
 
@@ -188,7 +192,7 @@ test('assam turns around (inverse)', () => {
 
     board.moveAssam(5);
     expect(board.assam_x).toBe(4);
-    expect(board.assam_y).toBe(4);
+    expect(board.assam_y).toBe(5);
     expect(board.assam_dir).toBe(Direction.NORTH);
 
 })

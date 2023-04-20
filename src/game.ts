@@ -379,7 +379,8 @@ export class Board {
                 this.moveAssamStep(false);
             } while (this.isAssamOutOfBounds());
             // add one more step (moving OOB isn't a step)
-            this.moveAssamStep(false);
+            // this.moveAssamStep(false);
+            // this line was removed as the extra movement is unintuitive
         }
     }
 
