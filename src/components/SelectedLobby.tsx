@@ -8,11 +8,11 @@ import updateGame from "../api/updateGame";
 
 export default function SelectedLobby() {
 	const { id } = useParams();
-	let refresh: NodeJS.Timer;
 
 	const [cacheId, setCacheId] = useState<string | null>(null);
 	const [players, setPlayers] = useState<Player[]>([]);
 	const [modified, setModified] = useState("");
+	const [refresh, setRefresh] = useState<NodeJS.Timer | null>(null);
 
 	async function fetchGame() {		
 		const res = await API.graphql(graphqlOperation(getGame, { id })) as GQLRes;
@@ -41,10 +41,11 @@ export default function SelectedLobby() {
 		fetchGame();
 
 		if (!refresh) {
-			refresh = setInterval(() => {
+			setRefresh(setInterval(() => {
 				fetchGame();
-			}, 3000)
+			}, 3000))
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	return (
