@@ -17,7 +17,6 @@ import empty from '../assets/carpets/empty.png'
 
 import arc from '../assets/arc.png'
 import assam from '../assets/assam.png'
-import pointer from '../assets/pointer.png'
 import dirham from '../assets/dirham.png'
 import { FaArrowDown, FaArrowLeft, FaArrowRight } from 'react-icons/fa'
 
