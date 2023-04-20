@@ -1,15 +1,12 @@
 import gql from 'graphql-tag';
 
 export default gql`
-query($id: ID!) {
-	getGame(id: $id) {
+query {
+	listLobby {
 		id
-		modified
         players {
             id
             name
-			deck
-			dirhams
         }
         totalPlayers
 	}

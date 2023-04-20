@@ -1,0 +1,90 @@
+type Board {
+	assam_x: Int!
+	assam_y: Int!
+	assam_dir: Direction!
+	width: Int!
+	height: Int!
+	grid: [[Color]]
+	dir_grid: [[Direction]]
+	top_carpets: [Carpet]
+	primary_diagonal_loop: Boolean!
+}
+
+input BoardInput {
+	assam_x: Int!
+	assam_y: Int!
+	assam_dir: Direction!
+	width: Int!
+	height: Int!
+	grid: [[Color]]
+	dir_grid: [[Direction]]
+	top_carpets: [CarpetInput]
+	primary_diagonal_loop: Boolean!
+}
+
+type Carpet {
+	x: Int!
+	y: Int!
+	isVertical: Boolean!
+	color: Color!
+}
+
+input CarpetInput {
+	x: Int!
+	y: Int!
+	isVertical: Boolean!
+	color: Color!
+}
+
+enum Color {
+	NONE
+	RED
+	BLUE
+	YELLOW
+	ORANGE
+}
+
+enum Direction {
+	EAST
+	NORTH
+	WEST
+	SOUTH
+}
+
+type Marrakech {
+	id: ID!
+	modified: AWSDateTime!
+	players: [Player]
+	totalPlayers: Int
+	board: Board!
+	lobby: Boolean!
+}
+
+type Mutation {
+	createGame(
+		board: BoardInput!,
+		players: [PlayerInput!]!,
+		lobby: Boolean!,
+		playercount: Int!
+	): Marrakech
+	updateGame(id: ID!, modified: AWSDateTime!, players: [PlayerInput!]!): Marrakech
+}
+
+type Player {
+	id: ID
+	name: String
+	deck: [Color!]!
+	dirhams: Int!
+}
+
+input PlayerInput {
+	id: ID
+	name: String
+	deck: [Color!]!
+	dirhams: Int!
+}
+
+type Query {
+	getGame(id: ID!): Marrakech
+	listLobby: [Marrakech]!
+}

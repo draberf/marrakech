@@ -56,7 +56,7 @@ test('carpets overlap or don\'t', () => {
     ]
 
     const carpet_count: number = carpets.length;
-    if (pairings.length != carpet_count-1) {
+    if (pairings.length !== carpet_count-1) {
         throw Error("Not one fewer expected pairings than carpets.");
     }
     // TODO: check for all pairings
@@ -322,7 +322,7 @@ test('check for contiguous OOB', () => {
 function isFakeCarpetInArray(elem: [number,number,boolean], array: Array<Carpet>): boolean {
     const [x, y, orientation] = elem;
     for (let carpet of array) {
-        if (carpet.x == x && carpet.y == y && carpet.isVertical == orientation) {
+        if (carpet.x === x && carpet.y === y && carpet.isVertical === orientation) {
             return true;
         }
     }

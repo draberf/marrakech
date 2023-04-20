@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
 export default gql`
-query($id: ID!) {
-	getGame(id: $id) {
+mutation($id: ID!, $modified: AWSDateTime!, $players: [PlayerInput!]!) {
+	updateGame(id: $id, modified: $modified, players: $players) {
 		id
 		modified
         players {
@@ -11,7 +11,6 @@ query($id: ID!) {
 			deck
 			dirhams
         }
-        totalPlayers
 	}
   }
 `;
