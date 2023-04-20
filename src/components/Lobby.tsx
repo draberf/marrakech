@@ -1,19 +1,21 @@
+import { API, graphqlOperation } from "aws-amplify";
 import { Link } from "react-router-dom";
+import listLobby from "../api/listLobby";
+import { useEffect, useState } from "react";
+import { GQLRes, Marrakech } from "../api/types";
 
 export default function Lobby() {
 
-	const tempData = [
-		{
-			id: "213543",
-			players: [1,2],
-			totalPlayers: 3,
-		},
-		{
-			id: "213556",
-			players: [1,2],
-			totalPlayers: 4,
-		},
-	]
+	const [lobby, setLobby] = useState<Marrakech[]>([]);
+
+	async function getLobby() {
+		const res = await API.graphql(graphqlOperation(listLobby)) as GQLRes;
+		setLobby(res.data.listLobby);
+	}
+
+	useEffect(() => {
+		getLobby(); 
+	}, []);
 
 	return (
 		<div className="containter d-flex flex-column justify-content-center h-100">
@@ -30,9 +32,9 @@ export default function Lobby() {
 				</thead>
 				<tbody>
 					{
-						tempData.map(row => <tr key={row.id}>
+						lobby.map(row => <tr key={row.id}>
 							<th scope="row">{row.id}</th>
-							<td>{row.players.length}/{row.totalPlayers}</td>
+							<td>{(row.players.filter(pl => pl.id !== null)).length}/{row.totalPlayers}</td>
 							<td>
 								<Link to={"/" + row.id + "/lobby"}>
 									<button className="btn btn-success">Join game</button>

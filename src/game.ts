@@ -1,6 +1,3 @@
-'use strict';
-
-
 export enum Direction {EAST, NORTH, WEST, SOUTH};
 export enum Color {NONE, RED, BLUE, YELLOW, ORANGE};
 export enum Action {TURN, ROLL, PLACE};
@@ -68,23 +65,23 @@ export function checkOverlap(carpet1: Carpet, carpet2: Carpet): boolean {
     if (Math.abs(carpet1.y - carpet2.y) > 1) { return false; }
 
     // both origins overlap
-    if (carpet1.x == carpet2.x && carpet1.y == carpet2.y) {
+    if (carpet1.x === carpet2.x && carpet1.y === carpet2.y) {
         return true;
     }
 
     // other options
     const carpet1_aux: {x: number, y: number} = carpet1.getSecondTile();
     
-    if (carpet1_aux.x == carpet2.x && carpet1_aux.y == carpet2.y) {
+    if (carpet1_aux.x === carpet2.x && carpet1_aux.y === carpet2.y) {
         return true;
     }
 
     const carpet2_aux: {x: number, y: number} = carpet2.getSecondTile();
 
-    if (carpet1.x == carpet2_aux.x && carpet1.y == carpet2_aux.y) {
+    if (carpet1.x === carpet2_aux.x && carpet1.y === carpet2_aux.y) {
         return true;
     }
-    if (carpet1_aux.x == carpet2_aux.x && carpet1_aux.y == carpet2_aux.y) {
+    if (carpet1_aux.x === carpet2_aux.x && carpet1_aux.y === carpet2_aux.y) {
         return true;
     }
     
@@ -199,9 +196,9 @@ export class Board {
      */
     overlapsTopCarpet(carpet: Carpet): boolean {
         for (let top_carpet of this.top_carpets) {
-            if (carpet.x == top_carpet.x && 
-                carpet.y == top_carpet.y &&
-                carpet.isVertical == top_carpet.isVertical) {
+            if (carpet.x === top_carpet.x && 
+                carpet.y === top_carpet.y &&
+                carpet.isVertical === top_carpet.isVertical) {
                     return true
                 }
         }
@@ -341,19 +338,19 @@ export class Board {
      */
     moveAssamStep(checkOutOfBounds: boolean): void {
         // right
-        if (this.assam_dir == Direction.EAST) {
+        if (this.assam_dir === Direction.EAST) {
             this.assam_x += 1;
         }
         // up
-        if (this.assam_dir == Direction.NORTH) {
+        if (this.assam_dir === Direction.NORTH) {
             this.assam_y -= 1;
         }
         // left
-        if (this.assam_dir == Direction.WEST) {
+        if (this.assam_dir === Direction.WEST) {
             this.assam_x -= 1;
         }
         // down
-        if (this.assam_dir == Direction.SOUTH) {
+        if (this.assam_dir === Direction.SOUTH) {
             this.assam_y += 1;
         }
 
@@ -370,8 +367,8 @@ export class Board {
                 right = false;
             }
             for (let boolean of [
-                this.assam_x % 2 != 0,
-                this.assam_y % 2 != 0,
+                this.assam_x % 2 !== 0,
+                this.assam_y % 2 !== 0,
                 this.primary_diagonal_loop]) {
                     right = (boolean ? !right : right);
                 }
@@ -403,7 +400,7 @@ export class Board {
     findContiguousUnderAssam(): Array<Number> {
         
         const color = this.color(this.assam_x, this.assam_y);
-        if (color == Color.NONE) { return []; }
+        if (color === Color.NONE) { return []; }
         
         let queue: Array<[number,number]> = [[this.assam_x,this.assam_y]];
         let visited: Array<number> = [];
@@ -416,7 +413,7 @@ export class Board {
             
             // check for failures
             if (this.isOutOfBounds(x,y))  { continue; }
-            if (this.color(x,y) != color) { continue; }
+            if (this.color(x,y) !== color) { continue; }
             const index = this.index(x, y);
             if (visited.includes(index)) { continue; }            
 

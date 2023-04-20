@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { API, graphqlOperation } from "aws-amplify";
 import createGame from "../api/createGame";
 import { startingConfig } from "../StartingConfig";
+import { GQLRes } from "../api/types";
 
 
 export default function CreateGame() {
@@ -10,16 +11,28 @@ export default function CreateGame() {
 		const option = (document.querySelector('input[name=gameOption]:checked') as HTMLElement).id;
 		const players = (document.querySelector('input[name=players]:checked') as HTMLElement).id as "players-2" | "players-3" | "players-4";
 
-		const game = await newGame(players) as any; // dodelat typy
+		let cachedId = localStorage.getItem("_userId");
+
+		if (!cachedId) {
+			cachedId = crypto.randomUUID();
+			localStorage.setItem("_userId", cachedId);
+		}
+
+		const config = startingConfig[players] as any;
 		if (option === 'private') {
+			config.lobby = false;
+			config.players.map((player: any) => {player.id = cachedId });
+			const game = await newGame(config) as GQLRes;
 			window.location.href = `/${game.data.createGame.id}/game`;
 		} else {
+			config.lobby = true;
+			const game = await newGame(config) as GQLRes;
 			window.location.href = `/${game.data.createGame.id}/lobby`;
 		}
 	}
 
-	async function newGame(players: "players-2" | "players-3" | "players-4") {		
-		const newGame = await API.graphql(graphqlOperation(createGame, startingConfig[players] ));
+	async function newGame(config: any) {		
+		const newGame = await API.graphql(graphqlOperation(createGame, { ...config }));
 		return newGame;
 	}
 

@@ -1,4 +1,4 @@
-import React, { EventHandler, useState } from 'react';
+import React, { EventHandler, useEffect, useState } from 'react';
 import { BindingElement } from 'typescript';
 
 // game state
@@ -155,10 +155,10 @@ type GameObjectProp = {
 	  }
   
 	  // override corners
-	  if (coordX == 7 && coordY == -1) {
+	  if (coordX === 7 && coordY === -1) {
 		arcDir = 'rotate(270deg)';
 	  }
-	  if (coordX == -1 && coordY == 7) {
+	  if (coordX === -1 && coordY === 7) {
 		arcDir = 'rotate(90deg)';
 	  }
   
@@ -186,6 +186,16 @@ type GameObjectProp = {
   
   // change this
 export default function MockApp() {
+	let refresh: NodeJS.Timer;
+
+	useEffect(() => {
+		if (!refresh) {
+			refresh = setInterval(() => {
+				console.log('todo fetch data')
+			}, 3000)
+		}
+	}, []);
+
 	const game = new Game([
 	  new Player([Color.RED, Color.RED], 30),
 	  new Player([Color.BLUE, Color.BLUE], 30)
