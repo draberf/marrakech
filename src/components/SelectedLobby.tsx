@@ -9,8 +9,8 @@ import updateGame from "../api/updateGame";
 export default function SelectedLobby() {
 	const { id } = useParams();
 	let refresh: NodeJS.Timer;
-	let cachedId = localStorage.getItem("_userId");
 
+	const [cacheId, setCacheId] = useState<string | null>(null);
 	const [players, setPlayers] = useState<Player[]>([]);
 	const [modified, setModified] = useState("");
 
@@ -25,16 +25,17 @@ export default function SelectedLobby() {
 
 	async function joinGame(idx: number) {
 		const data = players;
-		data[idx].id = cachedId as string;
+		data[idx].id = cacheId as string;
 		const res = await API.graphql(graphqlOperation(updateGame, { id, modified, players: data })) as GQLRes;
 		setPlayers(res.data.updateGame.players);
 		setModified(res.data.updateGame.modified);
 	}
 
 	useEffect(() => {
-		if (!cachedId) {
-			cachedId = crypto.randomUUID();
-			localStorage.setItem("_userId", cachedId);
+		setCacheId(localStorage.getItem("_userId"))
+		if (!cacheId) {
+			setCacheId(crypto.randomUUID());
+			localStorage.setItem("_userId", cacheId as string);
 		}
 
 		fetchGame();
