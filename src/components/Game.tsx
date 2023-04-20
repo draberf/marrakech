@@ -34,47 +34,30 @@ function GetDirectionalTransform(direction: Direction): string {
 
 type GameObjectProp = {
 	game: Game;
-  }
+}
   
-  type TileProp = {
+type TileProp = {
 	game: Game;
 	coordX: number;
 	coordY: number;
-  }
-  
-  function GameWindow({ game }: GameObjectProp) {
-  
-	const [gameState, setGameState] = useState(game);
-  
-	return <div className='container'>
-		<div className='row'>
-			<StatusBar game={gameState}/>
-			<div className='col-12 col-md-8'>
-				<GameArea game={gameState} />
-			</div>
-			<div className='col-12 col-md-4 d-flex flex-column justify-content-center'>
-				<div className='row'>
-					<div className='col-12'>
-						<ActionButtons game={gameState} />
-					</div>
-					<div className='col-12'>
-						<PlayersArea game={gameState} />
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-  }
+} 
 
-  function StatusBar({game}: GameObjectProp) {
+function StatusBar({game}: GameObjectProp, update: string) {
+	// todo
+	const colors = [
+		'Player red turn',
+		'Player blue turn',
+		'Player yellow turn',
+		'Player orange turn',
+	];
 	return <>
 		<h2 className='text-center'>
-			Hrac cerveny - pokladani koberce
+			{colors[game.turn % game.playercount]}
 		</h2>
 	</>
-  }
+}
 
-  function ActionButtons({game}: GameObjectProp) {
+function ActionButtons({game}: GameObjectProp) {
 	return <div className='row'>
 		<div className='col-6 col-md-12'>
 			<button className='btn btn-primary m-2 w-100'>
@@ -87,9 +70,9 @@ type GameObjectProp = {
 			</button>
 		</div>
 	</div>
-  }
+}
 
-  function PlayersArea({game}: GameObjectProp) {
+function PlayersArea({game}: GameObjectProp) {
 	return <>
 		<div>
 			Player 1: 30 dirham
@@ -98,30 +81,26 @@ type GameObjectProp = {
 			Player 2: 25 dirham
 		</div>
 	</>
-  }
-  
-  type ArrowProp = {
-	game: Game;
-	direction: Direction;
-  }
-  
-  function GameArea({game}: GameObjectProp) {
-	return <Board game={game}/>
-  }
+}
 
-  function Board({ game }: GameObjectProp) {
-	let tiles = [];
-	
+function Board({ game }: GameObjectProp) {
+	console.log(game)
+	const tiles = [];
+	const style = {
+		top:  `calc((100% * ${game.board.assam_y + 1} / 9) - 2.5px)`,
+		left: `calc((100% * ${game.board.assam_x + 1} / 9) - 2.5px)`,
+	}
 	for (let y = -1; y < 8; y++) {
 		let row = []
 		for (let x = -1; x < 8; x++) {
-		row.push(<Tile key={x+"-"+y} game={game} coordX={x} coordY={y}/>);
-	  }
+			row.push(<Tile key={x+"-"+y} game={game} coordX={x} coordY={y}/>);
+		}
 	  tiles.push(<div key={y} className='row'>{row}</div>)
 	}
+
   
 	return <div className='w-100 col-12 col-md-8 position-relative'>
-		<div id="assam" className='assam'>
+		<div id="assam" className='assam' style={style}>
 			<img className='assam-img' src={assam}/>
 			<span className='assam-arrow arrow-left'>
 				<FaArrowRight />
@@ -135,9 +114,9 @@ type GameObjectProp = {
 		</div>
 		{tiles}
 	</div>
-  }
+}
   
-  function Tile({ game, coordX, coordY }: TileProp) {
+function Tile({ game, coordX, coordY }: TileProp) {
 	if (coordX < 0 || coordY < 0 || coordX >= 7 || coordY >= 7) {
   
 	  let arcDir: string = 'rotate(270deg)';
@@ -165,10 +144,7 @@ type GameObjectProp = {
 	  return <div key={(coordY*9 + coordX).toString()} className="tile">
 		<img src={arc} className='floor' style={{transform: arcDir}}/>
 	  </div>;
-	}
-  
-	let content;
-  
+	} 
   
 	let floorSrc = empty;
 	const color = game.board.color(coordX, coordY);
@@ -180,34 +156,51 @@ type GameObjectProp = {
 	  floorSrc = Array(red_half, blue_half)[color-1]
 	}
 	
-	content = <img src={floorSrc} className='floor' alt={dirTransform} style={{transform:dirTransform}}/>;  
+	const content = <img src={floorSrc} className='floor' alt={dirTransform} style={{transform:dirTransform}}/>;  
 	return <div key={(coordY*9 + coordX).toString()} className="tile">{content}</div>;
-  }
+}
   
-  // change this
-export default function MockApp() {
+export default function App() {
 	let refresh: NodeJS.Timer;
 
 	useEffect(() => {
 		if (!refresh) {
 			refresh = setInterval(() => {
-				console.log('todo fetch data')
-			}, 3000)
+				console.log('todo fetch gameState')
+				gameState.board.moveAssam(1);
+				setGameState(gameState);
+				setHash(String(Math.random()))
+			}, 5000)
 		}
 	}, []);
 
+	// predat z api
 	const game = new Game([
 	  new Player([Color.RED, Color.RED], 30),
 	  new Player([Color.BLUE, Color.BLUE], 30)
 	]);
-  
-	game.board.placeCarpet(new Carpet(4,5,true,Color.RED));
-	game.board.moveAssam(2);
-	game.board.turnAssam(true);
-  
-	game.board.placeCarpet(new Carpet(0,0,false,Color.BLUE));
-	game.board.placeCarpet(new Carpet(2,5,false,Color.RED));
-  
-	return <GameWindow game={game} />
+
+	const [gameState, setGameState] = useState(game);
+	const [hash, setHash] = useState("");
+
+
+	return <div className='container'>
+		<div className='row'>
+			<StatusBar game={gameState} key={hash}/>
+			<div className='col-12 col-md-8'>
+				<Board game={gameState} key={hash}/>
+			</div>
+			<div className='col-12 col-md-4 d-flex flex-column justify-content-center'>
+				<div className='row'>
+					<div className='col-12'>
+						<ActionButtons game={gameState} key={hash} />
+					</div>
+					<div className='col-12'>
+						<PlayersArea game={gameState} key={hash} />
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 }
   

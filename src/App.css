@@ -140,6 +140,7 @@ body {
   width: calc((100% / 9) + 2.5px);
   top: calc((100% * 4 / 9) - 2.5px);
   left: calc((100% * 4 / 9) - 2.5px);
+  transition-duration: 1s;
 }
 
 .assam-img {
