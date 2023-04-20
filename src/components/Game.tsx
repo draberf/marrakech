@@ -28,6 +28,7 @@ const colors_full = [
   blue_full, orange_full, red_full, yellow_full
 ];
 
+// used to change the direction of tiles
 function GetDirectionalTransform(direction: Direction): string {
   return 'rotate('+Array(180,90,0,270)[direction]+'deg)';
 }
@@ -36,15 +37,16 @@ type GameObjectProp = {
 	game: Game;
   }
   
-  type TileProp = {
+type TileProp = {
 	game: Game;
 	coordX: number;
 	coordY: number;
-  }
+}
   
-  function GameWindow({ game }: GameObjectProp) {
+function GameWindow({ game }: GameObjectProp) {
   
 	const [gameState, setGameState] = useState(game);
+	console.log(game);
   
 	return <div className='container'>
 		<div className='row'>
@@ -67,22 +69,31 @@ type GameObjectProp = {
   }
 
   function StatusBar({game}: GameObjectProp) {
+
+	// todo: get player name
+	
+	let actionName = Array("Turning Assam", "Rolling", "Placing a carpet")[game.next_action];
+	
 	return <>
 		<h2 className='text-center'>
-			Hrac cerveny - pokladani koberce
+			Hrac cerveny - {actionName}
 		</h2>
 	</>
   }
 
   function ActionButtons({game}: GameObjectProp) {
+
+	let rollButtonDisabled: boolean = true;
+	let placeButtonDisabled: boolean = true;
+
 	return <div className='row'>
 		<div className='col-6 col-md-12'>
-			<button className='btn btn-primary m-2 w-100'>
+			<button className='btn btn-primary m-2 w-100' disabled={rollButtonDisabled}>
 				Hodit kostkou
 			</button>
 		</div>
 		<div className='col-6 col-md-12'>
-			<button className='btn btn-primary m-2 w-100'>
+			<button className='btn btn-primary m-2 w-100' disabled={placeButtonDisabled}>
 				Položit koberec
 			</button>
 		</div>
@@ -90,13 +101,32 @@ type GameObjectProp = {
   }
 
   function PlayersArea({game}: GameObjectProp) {
+
+	// todo: get player name
+
+	let players = [
+		<div key='player-1'>
+			Player 1: {game.players[0].dirhams} Dirham
+		</div>,
+		<div key='player-2'>
+			Player 2: {game.players[1].dirhams} Dirham
+		</div>,
+		<div key='player-count'>{game.playercount}</div>
+	]
+
+	if (game.playercount > 2) {
+		players.push(<div key='player-3'>
+			Player 3: {game.players[2].dirhams} Dirham
+		</div>)
+	}
+	if (game.playercount > 3) {
+		players.push(<div key='player-4'>
+			Player 4: {game.players[3].dirhams} Dirham
+		</div>)
+	}
+
 	return <>
-		<div>
-			Player 1: 30 dirham
-		</div>
-		<div>
-			Player 2: 25 dirham
-		</div>
+		{players}
 	</>
   }
   
