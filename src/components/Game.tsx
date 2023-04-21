@@ -247,7 +247,6 @@ export default function App() {
 		setGameState(gameState);
 		setHash(String(Math.random()))
 		alert(`assam moves by ${moves}`);
-		// force update here?
 	}
 
 	function place() {

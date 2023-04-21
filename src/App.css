@@ -172,5 +172,30 @@ body {
 }
 
 .highlight {
-  box-shadow: inset 0px 0px 15px rgba(255,168,15,1);
+  filter: drop-shadow(0px 0px 4px rgba(255, 167, 15, 0.9));
+  animation: blink 3s infinite;
+}
+
+@keyframes blink {
+  0% {
+    color: black;
+  }
+  30% {
+    color: #ffa70fe6;
+  }
+  70% {
+    color: black;
+  }
+}
+
+@-webkit-keyframes blink {
+  0% {
+    color: black;
+  }
+  30% {
+    color: #ffa70fe6;
+  }
+  70% {
+    color: black;
+  }
 }
