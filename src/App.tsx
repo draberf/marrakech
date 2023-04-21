@@ -14,6 +14,12 @@ import Tutorial from './components/Tutorial';
 export default function App() {
 	const [optionsModal, setOptionsModal] = useState(false);
 
+	if (localStorage.getItem("_darkMode") === 'true') {
+		document.documentElement.setAttribute('data-bs-theme','dark')
+	} else {
+		document.documentElement.setAttribute('data-bs-theme','light')
+	}
+
 	function hideModal() {
 		setOptionsModal(false);
 	}

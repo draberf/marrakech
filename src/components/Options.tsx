@@ -1,4 +1,19 @@
+import { useState } from "react";
+
 export default function Options(props: { closeFunction: () => void }) {
+	const [darkMode, setDarkMode] = useState(localStorage.getItem("_darkMode") === 'true');
+
+	function setMode() {
+		localStorage.setItem("_darkMode", String(!darkMode));
+		
+		if (!darkMode) {
+			document.documentElement.setAttribute('data-bs-theme','dark')
+		} else {
+			document.documentElement.setAttribute('data-bs-theme','light')
+		}
+		setDarkMode(!darkMode);
+	}
+
 	return (
 	<>
 		<div className="options"></div>
@@ -8,8 +23,8 @@ export default function Options(props: { closeFunction: () => void }) {
 					Options
 				</h3>
 				<div>
-					<input type="checkbox" id="darkMode" />
-					<label htmlFor="darkMode">Dark Mode/jazykove mutace/zvuk...</label>
+					<input type="checkbox" id="darkMode" onClick={() => setMode()} defaultChecked={darkMode} />
+					<label htmlFor="darkMode">Dark Mode</label>
 				</div>
 				<div className="text-center">
 					<button 
