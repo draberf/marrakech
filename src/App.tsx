@@ -58,8 +58,8 @@ export default function App() {
 			<BiCog className='options-cog' />
 		</button>
 		{optionsModal && <Options closeFunction={hideModal} />}
-		<audio id="music" controls loop>
-  			<source src="arabic_market.mp3" type="audio/mpeg" />
+		<audio className='d-none' id="music" controls loop>
+  			<source src="/arabic_market.mp3" type="audio/mpeg" />
 		</audio>
 		</BrowserRouter>
 	);
