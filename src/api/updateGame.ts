@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
 export default gql`
-mutation($id: ID!, $modified: AWSDateTime!, $players: [PlayerInput!]!) {
-	updateGame(id: $id, modified: $modified, players: $players) {
+mutation($id: ID!, $modified: AWSDateTime!, $players: [PlayerInput!]!, $board: BoardInput!) {
+	updateGame(id: $id, modified: $modified, players: $players, board: $board) {
 		id
 		modified
         players {
@@ -11,6 +11,22 @@ mutation($id: ID!, $modified: AWSDateTime!, $players: [PlayerInput!]!) {
 			deck
 			dirhams
         }
+		board {
+			assam_dir
+			assam_x
+			top_carpets {
+				color
+				isVertical
+				x
+				y
+			}
+			width
+			primary_diagonal_loop
+			height
+			grid
+			dir_grid
+			assam_y
+		}
 	}
-  }
+}
 `;

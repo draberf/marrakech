@@ -67,7 +67,12 @@ type Mutation {
 		lobby: Boolean!,
 		playercount: Int!
 	): Marrakech
-	updateGame(id: ID!, modified: AWSDateTime!, players: [PlayerInput!]!): Marrakech
+	updateGame(
+		id: ID!,
+		modified: AWSDateTime!,
+		players: [PlayerInput!]!,
+		board: BoardInput!
+	): Marrakech
 }
 
 type Player {
