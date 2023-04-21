@@ -174,3 +174,7 @@ body {
 .highlight {
   box-shadow: inset 0px 0px 15px rgba(255,168,15,1);
 }
+
+.hidden {
+  visibility: hidden;
+}
