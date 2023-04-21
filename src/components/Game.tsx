@@ -2,7 +2,7 @@ import React, { EventHandler, useEffect, useState } from 'react';
 import { BindingElement } from 'typescript';
 
 // game state
-import { Color, Direction, Player, Game, Carpet } from '../game';
+import { Color, Direction, Player, Game, Carpet, Action } from '../game';
 
 // images
 import blue_half from '../assets/carpets/blue.png'
@@ -28,6 +28,16 @@ const colors_full = [
 ];
 
 enum TurnDirection {STRAIGHT, LEFT, RIGHT};
+
+class Placement {
+
+	ready: boolean = false;
+	tile1_x: number = -1;
+	tile1_y: number = -1;
+
+	carpet: Carpet | null = null;
+
+}
 
 // used to change the direction of tiles
 function GetDirectionalTransform(direction: Direction): string {
@@ -66,13 +76,14 @@ function StatusBar({game}: GameObjectProp, update: string) {
 type ActionButtonsProp = {
 	game: Game;
 	rollCallback: Function;
+	placeState: Placement;
 	placeCallback: Function;
 }
 
-function ActionButtons({game, rollCallback, placeCallback}: ActionButtonsProp) {
+function ActionButtons({game, rollCallback, placeState, placeCallback}: ActionButtonsProp) {
 
-	let rollButtonDisabled: boolean = false;
-	let placeButtonDisabled: boolean = false;
+	let rollButtonDisabled: boolean = game.next_action !== Action.TURN;
+	let placeButtonDisabled: boolean = game.next_action !== Action.PLACE || !placeState.ready;
 
 	return <div className='row'>
 		<div className='col-6 col-md-12'>
@@ -122,10 +133,12 @@ type BoardProp = {
 	game: Game;
 	turnState: TurnDirection;
 	turnCallback: Function;
+	placeState: Placement;
+	placeCallback: Function;
 	hash: string;
 }
 
-function Board({ game, turnState, turnCallback, hash }: BoardProp) {
+function Board({ game, turnState, turnCallback, placeState, placeCallback, hash }: BoardProp) {
 	console.log(game)
 	const tiles = [];
 	const deg = Array(270,180,90,0)[game.board.assam_dir];
@@ -135,6 +148,12 @@ function Board({ game, turnState, turnCallback, hash }: BoardProp) {
 		// rotate Assam
 		transform: `rotate(${deg.toString()}deg)`,
 	}
+
+	let carpetPlacements: Array<Carpet> = [];
+	if (game.next_action == Action.PLACE) {
+		carpetPlacements = game.board.getValidPositions();
+	}
+
 	for (let y = -1; y < 8; y++) {
 		let row = []
 		for (let x = -1; x < 8; x++) {
@@ -143,22 +162,27 @@ function Board({ game, turnState, turnCallback, hash }: BoardProp) {
 	  tiles.push(<div key={y} className='row'>{row}</div>)
 	}
 
-	// set arrow highlight
-	let left_highlight = turnState == TurnDirection.LEFT ? 'highlight' : 'nohighlight';
-	let right_highlight = turnState == TurnDirection.RIGHT ? 'highlight' : 'nohighlight';
-	let straight_highlight = turnState == TurnDirection.STRAIGHT ? 'highlight' : 'nohighlight';
+	// set arrow appearance
+	let left_style = 'hidden';
+	let right_style = 'hidden';
+	let straight_style = 'hidden';
 
+	if (game.next_action === Action.TURN) {
+		left_style = turnState === TurnDirection.LEFT ? 'highlight' : 'nohighlight';
+		right_style = turnState === TurnDirection.RIGHT ? 'highlight' : 'nohighlight';
+		straight_style = turnState === TurnDirection.STRAIGHT ? 'highlight' : 'nohighlight';
+	}
   
 	return <div className='w-100 col-12 col-md-8 position-relative'>
 		<div id="assam" className='assam' style={style}>
 			<img className='assam-img' src={assam}/>
-			<span className={`assam-arrow arrow-left ${left_highlight}`} onClick={() => turnCallback(TurnDirection.LEFT)}>
+			<span className={`assam-arrow arrow-left ${left_style}`} onClick={() => turnCallback(TurnDirection.LEFT)}>
 				<FaArrowRight />
   			</span>
-			<span className={`assam-arrow arrow-right ${right_highlight}`} onClick={() => turnCallback(TurnDirection.RIGHT)}>
+			<span className={`assam-arrow arrow-right ${right_style}`} onClick={() => turnCallback(TurnDirection.RIGHT)}>
 			  	<FaArrowLeft />
   			</span>
-			<span className={`assam-arrow arrow-straight ${straight_highlight}`} onClick={() => turnCallback(TurnDirection.STRAIGHT)}>
+			<span className={`assam-arrow arrow-straight ${straight_style}`} onClick={() => turnCallback(TurnDirection.STRAIGHT)}>
 				<FaArrowDown />
   			</span>
 		</div>
@@ -244,12 +268,24 @@ export default function App() {
 		setTurnState(TurnDirection.STRAIGHT);
 		const moves = Array(1,2,2,3,3,4)[Math.floor(Math.random()*6)];
 		gameState.board.moveAssam(moves);
+		gameState.next_action = Action.PLACE;
 		setGameState(gameState);
-		setHash(String(Math.random()))
+		setHash(String(Math.random()));
 	}
+
+	// handle carpet placement
+	const [placeState, setPlaceState] = useState(new Placement());
 
 	function place() {
 
+		// by now, the Placement is ready
+
+
+		gameState.next_action = Action.TURN;
+		gameState.next_player += 1;
+		if (gameState.next_player >= gameState.playercount) gameState.next_player = 0;
+		setGameState(gameState);
+		setHash(String(Math.random()));
 	}
 
 
@@ -257,12 +293,17 @@ export default function App() {
 		<div className='row'>
 			<StatusBar game={gameState}/>
 			<div className='col-12 col-md-8'>
-				<Board game={gameState} turnState={turnState} turnCallback={setTurnState} hash={hash}/>
+				<Board
+					game={gameState}
+					turnState={turnState} turnCallback={setTurnState}
+					placeState={placeState} placeCallback={setPlaceState}
+					hash={hash}
+				/>
 			</div>
 			<div className='col-12 col-md-4 d-flex flex-column justify-content-center'>
 				<div className='row'>
 					<div className='col-12'>
-						<ActionButtons game={gameState} rollCallback={roll} placeCallback={place} />
+						<ActionButtons game={gameState} rollCallback={roll} placeState={placeState} placeCallback={place} />
 					</div>
 					<div className='col-12'>
 						<PlayersArea game={gameState} />
