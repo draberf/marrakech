@@ -153,6 +153,18 @@ export class Board {
         this.primary_diagonal_loop = true;
     }
 
+    setValues(board: Board) {
+        this.assam_x = board.assam_x;
+        this.assam_y = board.assam_y;
+        this.assam_dir = board.assam_dir;
+        this.width = board.width;
+        this.height = board.height;
+        this.grid = board.grid;
+        this.dir_grid = board.dir_grid;
+        this.top_carpets = board.top_carpets;
+        this.primary_diagonal_loop = board.primary_diagonal_loop;
+    }
+
 
     /** Returns the color at a given board tile
      * 

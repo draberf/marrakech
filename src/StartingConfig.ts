@@ -12,11 +12,11 @@ export const startingConfig = {
 
 		players: [
 			{
-				deck: shuffle([...Array(12)].map(() => "RED").concat([...Array(12)].map(() => "YELLOW"))),
+				deck: shuffle([...Array(12)].map(() => 1).concat([...Array(12)].map(() => 3))),
 				dirhams: 30
 			},
 			{
-				deck: shuffle([...Array(12)].map(() => "ORANGE").concat([...Array(12)].map(() => "BLUE"))),
+				deck: shuffle([...Array(12)].map(() => 4).concat([...Array(12)].map(() => 2))),
 				dirhams: 30
 			}
 		],
@@ -30,11 +30,11 @@ export const startingConfig = {
 		last_rolled: -1,
 
 		board: {
-			assam_dir: "SOUTH",
+			assam_dir: 3,
 			assam_x: 3,
 			assam_y: 3,
-			dir_grid: [...Array(7)].map(_=>Array(7).fill("SOUTH")),
-			grid: [...Array(7)].map(_=>Array(7).fill("NONE")),
+			dir_grid: [...Array(7)].map(_=>Array(7).fill(3)),
+			grid: [...Array(7)].map(_=>Array(7).fill(0)),
 			height: 7,
 			primary_diagonal_loop: true,
 			top_carpets: [],
@@ -46,15 +46,15 @@ export const startingConfig = {
 
 		players: [
 			{
-				deck: [...Array(15)].map(() => "RED"),
+				deck: [...Array(15)].map(() => 1),
 				dirhams: 30
 			},
 			{
-				deck: [...Array(15)].map(() => "YELLOW"),
+				deck: [...Array(15)].map(() => 3),
 				dirhams: 30
 			},
 			{
-				deck: [...Array(15)].map(() => "BLUE"),
+				deck: [...Array(15)].map(() => 2),
 				dirhams: 30
 			}
 		],
@@ -68,11 +68,11 @@ export const startingConfig = {
 		last_rolled: -1,
 
 		board: {
-			assam_dir: "SOUTH",
+			assam_dir: 3,
 			assam_x: 3,
 			assam_y: 3,
-			dir_grid: [...Array(7)].map(_=>Array(7).fill("SOUTH")),
-			grid: [...Array(7)].map(_=>Array(7).fill("NONE")),
+			dir_grid: [...Array(7)].map(_=>Array(7).fill(3)),
+			grid: [...Array(7)].map(_=>Array(7).fill(0)),
 			height: 7,
 			primary_diagonal_loop: true,
 			top_carpets: [],
@@ -83,19 +83,19 @@ export const startingConfig = {
 
 		players: [
 			{
-				deck: [...Array(12)].map(() => "RED"),
+				deck: [...Array(12)].map(() => 1),
 				dirhams: 30
 			},
 			{
-				deck: [...Array(12)].map(() => "YELLOW"),
+				deck: [...Array(12)].map(() => 3),
 				dirhams: 30
 			},
 			{
-				deck: [...Array(12)].map(() => "BLUE"),
+				deck: [...Array(12)].map(() => 2),
 				dirhams: 30
 			},
 			{
-				deck: [...Array(12)].map(() => "ORANGE"),
+				deck: [...Array(12)].map(() => 4),
 				dirhams: 30
 			}
 		],
@@ -109,11 +109,11 @@ export const startingConfig = {
 		last_rolled: -1,
 		
 		board: {
-			assam_dir: "SOUTH",
+			assam_dir: 3,
 			assam_x: 3,
 			assam_y: 3,
-			dir_grid: [...Array(7)].map(_=>Array(7).fill("SOUTH")),
-			grid: [...Array(7)].map(_=>Array(7).fill("NONE")),
+			dir_grid: [...Array(7)].map(_=>Array(7).fill(3)),
+			grid: [...Array(7)].map(_=>Array(7).fill(0)),
 			height: 7,
 			primary_diagonal_loop: true,
 			top_carpets: [],

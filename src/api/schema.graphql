@@ -1,11 +1,11 @@
 type Board {
 	assam_x: Int!
 	assam_y: Int!
-	assam_dir: Direction!
+	assam_dir: Int!
 	width: Int!
 	height: Int!
-	grid: [[Color]]
-	dir_grid: [[Direction]]
+	grid: [[Int]]
+	dir_grid: [[Int]]
 	top_carpets: [Carpet]
 	primary_diagonal_loop: Boolean!
 }
@@ -13,11 +13,11 @@ type Board {
 input BoardInput {
 	assam_x: Int!
 	assam_y: Int!
-	assam_dir: Direction!
+	assam_dir: Int!
 	width: Int!
 	height: Int!
-	grid: [[Color]]
-	dir_grid: [[Direction]]
+	grid: [[Int]]
+	dir_grid: [[Int]]
 	top_carpets: [CarpetInput]
 	primary_diagonal_loop: Boolean!
 }
@@ -26,29 +26,14 @@ type Carpet {
 	x: Int!
 	y: Int!
 	isVertical: Boolean!
-	color: Color!
+	color: Int!
 }
 
 input CarpetInput {
 	x: Int!
 	y: Int!
 	isVertical: Boolean!
-	color: Color!
-}
-
-enum Color {
-	NONE
-	RED
-	BLUE
-	YELLOW
-	ORANGE
-}
-
-enum Direction {
-	EAST
-	NORTH
-	WEST
-	SOUTH
+	color: Int!
 }
 
 type Marrakech {
@@ -78,14 +63,14 @@ type Mutation {
 type Player {
 	id: ID
 	name: String
-	deck: [Color!]!
+	deck: [Int!]!
 	dirhams: Int!
 }
 
 input PlayerInput {
 	id: ID
 	name: String
-	deck: [Color!]!
+	deck: [Int!]!
 	dirhams: Int!
 }
 

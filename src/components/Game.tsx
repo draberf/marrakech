@@ -19,6 +19,11 @@ import arc from '../assets/arc.png'
 import assam from '../assets/assam.png'
 import dirham from '../assets/dirham.png'
 import { FaArrowDown, FaArrowLeft, FaArrowRight } from 'react-icons/fa'
+import { API, graphqlOperation } from 'aws-amplify';
+import updateGame from '../api/updateGame';
+import { useParams } from 'react-router-dom';
+import { GQLRes } from '../api/types';
+import getGame from '../api/getGame';
 
 const colors_half = [
   blue_half, orange_half, red_half, yellow_half
@@ -126,7 +131,6 @@ type BoardProp = {
 }
 
 function Board({ game, turnState, turnCallback, hash }: BoardProp) {
-	console.log(game)
 	const tiles = [];
 	const deg = Array(270,180,90,0)[game.board.assam_dir];
 	const style = {
@@ -136,7 +140,7 @@ function Board({ game, turnState, turnCallback, hash }: BoardProp) {
 		transform: `rotate(${deg.toString()}deg)`,
 	}
 	for (let y = -1; y < 8; y++) {
-		let row = []
+		const row = []
 		for (let x = -1; x < 8; x++) {
 			row.push(<Tile key={x+"-"+y} game={game} coordX={x} coordY={y}/>);
 		}
@@ -144,9 +148,9 @@ function Board({ game, turnState, turnCallback, hash }: BoardProp) {
 	}
 
 	// set arrow highlight
-	let left_highlight = turnState == TurnDirection.LEFT ? 'highlight' : 'nohighlight';
-	let right_highlight = turnState == TurnDirection.RIGHT ? 'highlight' : 'nohighlight';
-	let straight_highlight = turnState == TurnDirection.STRAIGHT ? 'highlight' : 'nohighlight';
+	const left_highlight = turnState === TurnDirection.LEFT ? 'highlight' : 'nohighlight';
+	const right_highlight = turnState === TurnDirection.RIGHT ? 'highlight' : 'nohighlight';
+	const straight_highlight = turnState === TurnDirection.STRAIGHT ? 'highlight' : 'nohighlight';
 
   
 	return <div className='w-100 col-12 col-md-8 position-relative'>
@@ -169,7 +173,7 @@ function Board({ game, turnState, turnCallback, hash }: BoardProp) {
 function Tile({ game, coordX, coordY }: TileProp) {
 	if (coordX < 0 || coordY < 0 || coordX >= 7 || coordY >= 7) {
   
-	  let arcDir: string = 'rotate(270deg)';
+	  let arcDir = 'rotate(270deg)';
 	  if (coordY < 0 && coordX < 7) {
 		arcDir = coordX % 2 ? 'rotate(0deg)' : 'rotate(90deg)';
 	  }
@@ -211,32 +215,36 @@ function Tile({ game, coordX, coordY }: TileProp) {
 }
   
 export default function App() {
-	let refresh: NodeJS.Timer;
+	const { id } = useParams();
 
-	// useEffect(() => {
-	// 	if (!refresh) {
-	// 		refresh = setInterval(() => {
-	// 			console.log('todo fetch gameState')
-	// 			gameState.board.moveAssam(1);
-	// 			setGameState(gameState);
-	// 			setHash(String(Math.random()))
-	// 		}, 1000)
-	// 	}
-	// }, []);
-
-	// predat z api
-	const game = new Game([
-	  new Player([Color.RED, Color.RED], 30),
-	  new Player([Color.BLUE, Color.BLUE], 30)
-	]);
-
-	const [gameState, setGameState] = useState(game);
+	const [gameState, setGameState] = useState(new Game([
+		new Player([Color.RED, Color.RED], 30),
+		new Player([Color.BLUE, Color.BLUE], 30)
+	]));
 	const [hash, setHash] = useState("");
-
+	const [modified, setModified] = useState("");
 	// handle assam movement
 	const [turnState, setTurnState] = useState(TurnDirection.STRAIGHT);
+	let refresh: NodeJS.Timer;
 
-	function roll() {
+	useEffect(() => {
+		if (!refresh) {
+			refresh = setInterval(() => {
+				fetchGame();
+			}, 2000)
+		}
+	}, []);
+
+	async function fetchGame() {		
+		const res = await API.graphql(graphqlOperation(getGame, { id })) as GQLRes;
+		setModified(res.data.getGame.modified);
+		gameState.board.setValues(res.data.getGame.board);
+		// gameState.players = res.data.getGame.players;
+		setGameState(gameState);
+		setHash(String(Math.random()));
+	}
+
+	async function roll() {
 		if (turnState !== TurnDirection.STRAIGHT) {
 			if (turnState === TurnDirection.LEFT) gameState.board.turnAssam(false);
 			if (turnState === TurnDirection.RIGHT) gameState.board.turnAssam(true);
@@ -244,8 +252,8 @@ export default function App() {
 		setTurnState(TurnDirection.STRAIGHT);
 		const moves = Array(1,2,2,3,3,4)[Math.floor(Math.random()*6)];
 		gameState.board.moveAssam(moves);
-		setGameState(gameState);
-		setHash(String(Math.random()))
+
+		await API.graphql(graphqlOperation(updateGame, { id, modified, players: gameState.players, board: gameState.board })) as GQLRes;
 	}
 
 	function place() {
