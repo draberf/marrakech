@@ -199,3 +199,14 @@ body {
     color: black;
   }
 }
+
+
+[data-bs-theme="dark"] > * .btn-primary {
+  background-color: rgb(29, 1, 185);
+  text-decoration: none;
+}
+
+[data-bs-theme="dark"] > * .btn-primary:hover {
+  background-color: rgb(76, 50, 221);
+  text-decoration: none;
+}
