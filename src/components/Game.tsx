@@ -122,9 +122,10 @@ type BoardProp = {
 	game: Game;
 	turnState: TurnDirection;
 	turnCallback: Function;
+	hash: string;
 }
 
-function Board({ game, turnState, turnCallback }: BoardProp) {
+function Board({ game, turnState, turnCallback, hash }: BoardProp) {
 	console.log(game)
 	const tiles = [];
 	const deg = Array(270,180,90,0)[game.board.assam_dir];
@@ -244,6 +245,7 @@ export default function App() {
 		const moves = Array(1,2,2,3,3,4)[Math.floor(Math.random()*6)];
 		gameState.board.moveAssam(moves);
 		setGameState(gameState);
+		setHash(String(Math.random()))
 		alert(`assam moves by ${moves}`);
 		// force update here?
 	}
@@ -255,17 +257,17 @@ export default function App() {
 
 	return <div className='container'>
 		<div className='row'>
-			<StatusBar game={gameState} key={hash}/>
+			<StatusBar game={gameState}/>
 			<div className='col-12 col-md-8'>
-				<Board game={gameState} turnState={turnState} turnCallback={setTurnState} key={hash}/>
+				<Board game={gameState} turnState={turnState} turnCallback={setTurnState} hash={hash}/>
 			</div>
 			<div className='col-12 col-md-4 d-flex flex-column justify-content-center'>
 				<div className='row'>
 					<div className='col-12'>
-						<ActionButtons game={gameState} key={hash} rollCallback={roll} placeCallback={place} />
+						<ActionButtons game={gameState} rollCallback={roll} placeCallback={place} />
 					</div>
 					<div className='col-12'>
-						<PlayersArea game={gameState} key={hash} />
+						<PlayersArea game={gameState} />
 					</div>
 				</div>
 			</div>
