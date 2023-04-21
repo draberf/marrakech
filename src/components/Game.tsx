@@ -27,6 +27,8 @@ const colors_full = [
   blue_full, orange_full, red_full, yellow_full
 ];
 
+enum TurnDirection {STRAIGHT, LEFT, RIGHT};
+
 // used to change the direction of tiles
 function GetDirectionalTransform(direction: Direction): string {
   return 'rotate('+Array(180,90,0,270)[direction]+'deg)';
@@ -40,7 +42,11 @@ type TileProp = {
 	game: Game;
 	coordX: number;
 	coordY: number;
-} 
+}
+
+type FunctionalProp = {
+	function: Function;
+}
 
 function StatusBar({game}: GameObjectProp, update: string) {
 	// todo
@@ -57,19 +63,25 @@ function StatusBar({game}: GameObjectProp, update: string) {
 	</>
 }
 
-  function ActionButtons({game}: GameObjectProp) {
+type ActionButtonsProp = {
+	game: Game;
+	rollCallback: Function;
+	placeCallback: Function;
+}
 
-	let rollButtonDisabled: boolean = true;
-	let placeButtonDisabled: boolean = true;
+function ActionButtons({game, rollCallback, placeCallback}: ActionButtonsProp) {
+
+	let rollButtonDisabled: boolean = false;
+	let placeButtonDisabled: boolean = false;
 
 	return <div className='row'>
 		<div className='col-6 col-md-12'>
-			<button className='btn btn-primary m-2 w-100' disabled={rollButtonDisabled}>
+			<button className='btn btn-primary m-2 w-100' disabled={rollButtonDisabled} onClick={() => rollCallback()}>
 				Hodit kostkou
 			</button>
 		</div>
 		<div className='col-6 col-md-12'>
-			<button className='btn btn-primary m-2 w-100' disabled={placeButtonDisabled}>
+			<button className='btn btn-primary m-2 w-100' disabled={placeButtonDisabled} onClick={() => placeCallback()}>
 				Položit koberec
 			</button>
 		</div>
@@ -106,7 +118,13 @@ function StatusBar({game}: GameObjectProp, update: string) {
 	</>
 }
 
-function Board({ game }: GameObjectProp) {
+type BoardProp = {
+	game: Game;
+	turnState: TurnDirection;
+	turnCallback: Function;
+}
+
+function Board({ game, turnState, turnCallback }: BoardProp) {
 	console.log(game)
 	const tiles = [];
 	const deg = Array(270,180,90,0)[game.board.assam_dir];
@@ -124,17 +142,22 @@ function Board({ game }: GameObjectProp) {
 	  tiles.push(<div key={y} className='row'>{row}</div>)
 	}
 
+	// set arrow highlight
+	let left_highlight = turnState == TurnDirection.LEFT ? 'highlight' : 'nohighlight';
+	let right_highlight = turnState == TurnDirection.RIGHT ? 'highlight' : 'nohighlight';
+	let straight_highlight = turnState == TurnDirection.STRAIGHT ? 'highlight' : 'nohighlight';
+
   
 	return <div className='w-100 col-12 col-md-8 position-relative'>
 		<div id="assam" className='assam' style={style}>
 			<img className='assam-img' src={assam}/>
-			<span className='assam-arrow arrow-left'>
+			<span className={`assam-arrow arrow-left ${left_highlight}`} onClick={() => turnCallback(TurnDirection.LEFT)}>
 				<FaArrowRight />
   			</span>
-			<span className='assam-arrow arrow-right'>
+			<span className={`assam-arrow arrow-right ${right_highlight}`} onClick={() => turnCallback(TurnDirection.RIGHT)}>
 			  	<FaArrowLeft />
   			</span>
-			<span className='assam-arrow arrow-straight'>
+			<span className={`assam-arrow arrow-straight ${straight_highlight}`} onClick={() => turnCallback(TurnDirection.STRAIGHT)}>
 				<FaArrowDown />
   			</span>
 		</div>
@@ -189,16 +212,16 @@ function Tile({ game, coordX, coordY }: TileProp) {
 export default function App() {
 	let refresh: NodeJS.Timer;
 
-	useEffect(() => {
-		if (!refresh) {
-			refresh = setInterval(() => {
-				console.log('todo fetch gameState')
-				gameState.board.moveAssam(1);
-				setGameState(gameState);
-				setHash(String(Math.random()))
-			}, 1000)
-		}
-	}, []);
+	// useEffect(() => {
+	// 	if (!refresh) {
+	// 		refresh = setInterval(() => {
+	// 			console.log('todo fetch gameState')
+	// 			gameState.board.moveAssam(1);
+	// 			setGameState(gameState);
+	// 			setHash(String(Math.random()))
+	// 		}, 1000)
+	// 	}
+	// }, []);
 
 	// predat z api
 	const game = new Game([
@@ -209,17 +232,37 @@ export default function App() {
 	const [gameState, setGameState] = useState(game);
 	const [hash, setHash] = useState("");
 
+	// handle assam movement
+	const [turnState, setTurnState] = useState(TurnDirection.STRAIGHT);
+
+	function roll() {
+		if (turnState !== TurnDirection.STRAIGHT) {
+			if (turnState === TurnDirection.LEFT) gameState.board.turnAssam(false);
+			if (turnState === TurnDirection.RIGHT) gameState.board.turnAssam(true);
+		}
+		setTurnState(TurnDirection.STRAIGHT);
+		const moves = Array(1,2,2,3,3,4)[Math.floor(Math.random()*6)];
+		gameState.board.moveAssam(moves);
+		setGameState(gameState);
+		alert(`assam moves by ${moves}`);
+		// force update here?
+	}
+
+	function place() {
+
+	}
+
 
 	return <div className='container'>
 		<div className='row'>
 			<StatusBar game={gameState} key={hash}/>
 			<div className='col-12 col-md-8'>
-				<Board game={gameState} key={hash}/>
+				<Board game={gameState} turnState={turnState} turnCallback={setTurnState} key={hash}/>
 			</div>
 			<div className='col-12 col-md-4 d-flex flex-column justify-content-center'>
 				<div className='row'>
 					<div className='col-12'>
-						<ActionButtons game={gameState} key={hash} />
+						<ActionButtons game={gameState} key={hash} rollCallback={roll} placeCallback={place} />
 					</div>
 					<div className='col-12'>
 						<PlayersArea game={gameState} key={hash} />
