@@ -109,9 +109,12 @@ function StatusBar({game}: GameObjectProp, update: string) {
 function Board({ game }: GameObjectProp) {
 	console.log(game)
 	const tiles = [];
+	const deg = Array(270,180,90,0)[game.board.assam_dir];
 	const style = {
 		top:  `calc((100% * ${game.board.assam_y + 1} / 9) - 2.5px)`,
 		left: `calc((100% * ${game.board.assam_x + 1} / 9) - 2.5px)`,
+		// rotate Assam
+		transform: `rotate(${deg.toString()}deg)`,
 	}
 	for (let y = -1; y < 8; y++) {
 		let row = []
@@ -193,7 +196,7 @@ export default function App() {
 				gameState.board.moveAssam(1);
 				setGameState(gameState);
 				setHash(String(Math.random()))
-			}, 5000)
+			}, 1000)
 		}
 	}, []);
 
