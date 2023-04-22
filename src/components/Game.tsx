@@ -238,6 +238,7 @@ function Board({ game, turnState, turnCallback, placeState, placeCallback, hash 
 		}
 	}
 
+	// generate tiles
 	for (let y = -1; y < 8; y++) {
 		const row = []
 		for (let x = -1; x < 8; x++) {
@@ -393,7 +394,7 @@ export default function App() {
 	async function place() {
 
 		// by now, the Placement is ready
-		if (placeState.carpet === null) {
+		if (placeState.carpet == null) {
 			alert('place called with null carpet');
 			return;
 		}
