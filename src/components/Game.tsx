@@ -121,7 +121,6 @@ function PlayersArea({game}: GameObjectProp) {
 		<div key='player-2'>
 			Player 2: {game.players[1].dirhams} Dirham
 		</div>,
-		<div key='player-count'>{game.playercount}</div>
 	]
 
 	if (game.playercount > 2) {
