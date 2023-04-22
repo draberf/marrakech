@@ -211,6 +211,19 @@ function Board({ game, turnState, turnCallback, placeState, placeCallback, hash 
 		transform: `rotate(${deg.toString()}deg)`,
 	}
 
+	function selectFirstTile(x:number, y:number) {
+		placeState.firstTile = true;
+		placeState.tile1_x = x;
+		placeState.tile1_y = y;
+		placeCallback(placeState);
+	}
+
+	function selectSecondTile(carpet: Carpet) {
+		placeState.ready = true;
+		placeState.carpet = carpet;
+		placeCallback(placeState);
+	}
+
 	let tileCandidates: Array<[number, number]> = [];
 	let carpetCandidates: Array<[Carpet, [number, number]]> = [];
 	if (game.next_action == Action.PLACE) {
@@ -227,6 +240,21 @@ function Board({ game, turnState, turnCallback, placeState, placeCallback, hash 
 			// calculate tile style and callback
 			let tileStyle = '';
 			let tileCallback = () => {};
+
+			if (tileCandidates.length > 0) {
+				for (let [candidate_x, candidate_y] of tileCandidates) {
+					if (candidate_x !== x || candidate_y !== y) { continue; }
+					let tileStyle = 'tilehighlight';
+					let tileCallback = selectFirstTile(x, y);
+				}
+			}
+			if (carpetCandidates.length > 0) {
+				for (let [carpet, [candidate_x, candidate_y]] of carpetCandidates) {
+					if (candidate_x !== x || candidate_y !== y) { continue; }
+					let tileStyle = 'tilehighlight';
+					let tileCallback = selectSecondTile(carpet);
+				}
+			}
 
 			row.push(<Tile key={x+"-"+y} game={game} coordX={x} coordY={y} highlight_style={tileStyle} onClickCallback={tileCallback}/>);
 		}
