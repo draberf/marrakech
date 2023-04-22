@@ -50,11 +50,11 @@ export const startingConfig = {
 				dirhams: 30
 			},
 			{
-				deck: [...Array(15)].map(() => 3),
+				deck: [...Array(15)].map(() => 2),
 				dirhams: 30
 			},
 			{
-				deck: [...Array(15)].map(() => 2),
+				deck: [...Array(15)].map(() => 3),
 				dirhams: 30
 			}
 		],
@@ -87,11 +87,11 @@ export const startingConfig = {
 				dirhams: 30
 			},
 			{
-				deck: [...Array(12)].map(() => 3),
+				deck: [...Array(12)].map(() => 2),
 				dirhams: 30
 			},
 			{
-				deck: [...Array(12)].map(() => 2),
+				deck: [...Array(12)].map(() => 3),
 				dirhams: 30
 			},
 			{
