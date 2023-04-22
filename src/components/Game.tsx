@@ -31,6 +31,7 @@ enum TurnDirection {STRAIGHT, LEFT, RIGHT};
 
 class Placement {
 
+	firstTile: boolean = false;
 	ready: boolean = false;
 	tile1_x: number = -1;
 	tile1_y: number = -1;
@@ -211,7 +212,7 @@ function Board({ game, turnState, turnCallback, placeState, placeCallback, hash 
 	let tileCandidates: Array<[number, number]> = [];
 	let carpetCandidates: Array<[Carpet, [number, number]]> = [];
 	if (game.next_action == Action.PLACE) {
-		if (placeState.tile1_x == -1) {
+		if (!placeState.firstTile) {
 			tileCandidates = GetFirstTileCandidates(game.board);
 		} else {
 			carpetCandidates = GetCarpetCandidates(game.board, [placeState.tile1_x, placeState.tile1_y]);
