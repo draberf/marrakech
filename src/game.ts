@@ -161,8 +161,17 @@ export class Board {
         this.height = board.height;
         this.grid = board.grid;
         this.dir_grid = board.dir_grid;
-        this.top_carpets = board.top_carpets;
         this.primary_diagonal_loop = board.primary_diagonal_loop;
+
+        this.top_carpets = [];
+        for (let object of board.top_carpets) {
+            this.top_carpets.push(new Carpet(
+                object.x,
+                object.y,
+                object.isVertical,
+                object.color
+            ));
+        }
     }
 
 
