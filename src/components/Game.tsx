@@ -417,7 +417,10 @@ export default function App() {
 		// update turn
 		gameState.next_action = Action.TURN;
 		gameState.next_player += 1;
-		if (gameState.next_player >= gameState.playercount) gameState.next_player = 0;
+		if (gameState.next_player >= gameState.playercount) {
+			gameState.next_player = 0;
+			gameState.turn += 1;
+		}
 
 		// reset place state
 		setPlaceState(new Placement());
