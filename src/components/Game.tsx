@@ -101,7 +101,7 @@ function ActionButtons({game, rollCallback, placeState, placeCallback, resetCall
 			<div className='d-flex flex-row justify-content-around'>
 				<button className='btn btn-success m-2 w-50' disabled={placeButtonDisabled} onClick={() => placeCallback()}>
 					Place
-			</button>
+				</button>
 				<button className='btn btn-danger m-2 w-25' disabled={placeButtonDisabled} onClick={() => resetCallback()}>
 					Reset
 				</button>
@@ -232,6 +232,7 @@ function Board({ game, turnState, turnCallback, placeState, placeCallback, hash 
 
 	let tileCandidates: Array<[number, number]> = [];
 	let carpetCandidates: Array<[Carpet, [number, number]]> = [];
+	// add player check here
 	if (game.next_action === Action.PLACE) {
 		if (!placeState.firstTile) {
 			tileCandidates = GetFirstTileCandidates(game.board);
@@ -248,14 +249,24 @@ function Board({ game, turnState, turnCallback, placeState, placeCallback, hash 
 			let tileStyle = '';
 			let tileCallback = () => {};
 
-			if (tileCandidates.length > 0) {
+			if (placeState.ready && placeState.carpet) {
+				const carpet = placeState.carpet;
+				if (carpet.x === x && carpet.y === y) {
+					tileStyle = 'tilehighlight';
+				}
+				if (carpet.getSecondTile().x === x && carpet.getSecondTile().y === y) {
+					tileStyle = 'tilehighlight';
+				}
+			}
+
+			if (!placeState.ready && tileCandidates.length > 0) {
 				for (let [candidate_x, candidate_y] of tileCandidates) {
 					if (candidate_x !== x || candidate_y !== y) { continue; }
 					tileStyle = 'tilehighlight';
 					tileCallback = () => selectFirstTile(x, y);
 				}
 			}
-			if (carpetCandidates.length > 0) {
+			if (!placeState.ready && carpetCandidates.length > 0) {
 				if (placeState.tile1_x === x && placeState.tile1_y === y) {
 					tileStyle = 'tilehighlight';
 				} else {
