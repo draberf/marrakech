@@ -175,6 +175,14 @@ body {
   box-shadow: inset 0px 0px 15px rgba(255,168,15,1);
 }
 
+.tilehighlight {
+  box-shadow: inset 0px 0px 20px rgba(0,255,0,1);
+}
+
+.tilehighlight:hover {
+  filter: brightness(90%);
+}
+
 .hidden {
   visibility: hidden;
 }
