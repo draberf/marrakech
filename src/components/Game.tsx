@@ -14,6 +14,8 @@ import red_full from '../assets/carpets/red_complete.png'
 import yellow_half from '../assets/carpets/yellow.png'
 import yellow_full from '../assets/carpets/yellow_complete.png'
 import empty from '../assets/carpets/empty.png'
+import gone from '../assets/carpets/gone.png'
+
 
 import arc from '../assets/arc.png'
 import assam from '../assets/assam.png'
@@ -24,13 +26,6 @@ import updateGame from '../api/updateGame';
 import { useParams } from 'react-router-dom';
 import { GQLRes } from '../api/types';
 import getGame from '../api/getGame';
-
-const colors_half = [
-  blue_half, orange_half, red_half, yellow_half
-];
-const colors_full = [
-  blue_full, orange_full, red_full, yellow_full
-];
 
 enum TurnDirection {STRAIGHT, LEFT, RIGHT};
 
@@ -102,7 +97,7 @@ function ActionButtons({game, rollCallback, placeState, placeCallback, resetCall
 				<button className='btn btn-success m-2 w-50' disabled={placeButtonDisabled} onClick={() => placeCallback()}>
 					Place
 				</button>
-				<button className='btn btn-danger m-2 w-25' disabled={placeButtonDisabled} onClick={() => resetCallback()}>
+				<button className='btn btn-danger m-2 w-25' disabled={resetButtonDisabled} onClick={() => resetCallback()}>
 					Reset
 				</button>
 			</div>
@@ -114,25 +109,20 @@ function PlayersArea({game}: GameObjectProp) {
 
 	// todo: get player name
 
-	let players = [
-		<div key='player-1'>
-			Player 1: {game.players[0].dirhams} Dirham
-		</div>,
-		<div key='player-2'>
-			Player 2: {game.players[1].dirhams} Dirham
-		</div>,
-	]
+	let i = 0;
 
-	if (game.playercount > 2) {
-		players.push(<div key='player-3'>
-			Player 3: {game.players[2].dirhams} Dirham
-		</div>)
-	}
-	if (game.playercount > 3) {
-		players.push(<div key='player-4'>
-			Player 4: {game.players[3].dirhams} Dirham
-		</div>)
-	}
+	let players = game.players.map(player => {
+		const playerColorSrc = player.deck.length > 0 ?
+			Array(red_full, blue_full, yellow_full, orange_full)[player.getTopCarpet()-1] :
+			gone;
+		
+		const highlight = game.next_player === i ? 'playerHighlight playerLine' : 'playerLine';
+		i++;
+		
+		return <div key={'player-'+i} className={highlight}>
+			{`<Player name>`}: <img src={playerColorSrc}></img> {player.deck.length} <img src={dirham}></img> {player.dirhams}
+		</div>
+	})
 
 	return <>
 		{players}
