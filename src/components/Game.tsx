@@ -107,7 +107,7 @@ function ActionButtons({game, rollCallback, placeState, placeCallback}: ActionBu
 	</div>
 }
 
-  function PlayersArea({game}: GameObjectProp) {
+function PlayersArea({game}: GameObjectProp) {
 
 	// todo: get player name
 
@@ -248,15 +248,19 @@ function Board({ game, turnState, turnCallback, placeState, placeCallback, hash 
 			if (tileCandidates.length > 0) {
 				for (let [candidate_x, candidate_y] of tileCandidates) {
 					if (candidate_x !== x || candidate_y !== y) { continue; }
-					let tileStyle = 'tilehighlight';
-					let tileCallback = selectFirstTile(x, y);
+					tileStyle = 'tilehighlight';
+					tileCallback = () => selectFirstTile(x, y);
 				}
 			}
 			if (carpetCandidates.length > 0) {
-				for (let [carpet, [candidate_x, candidate_y]] of carpetCandidates) {
-					if (candidate_x !== x || candidate_y !== y) { continue; }
-					let tileStyle = 'tilehighlight';
-					let tileCallback = selectSecondTile(carpet);
+				if (placeState.tile1_x === x && placeState.tile1_y === y) {
+					tileStyle = 'tilehighlight';
+				} else {
+					for (let [carpet, [candidate_x, candidate_y]] of carpetCandidates) {
+						if (candidate_x !== x || candidate_y !== y) { continue; }
+						tileStyle = 'tilehighlight';
+						tileCallback = () => selectSecondTile(carpet);
+					}
 				}
 			}
 
@@ -275,7 +279,7 @@ function Board({ game, turnState, turnCallback, placeState, placeCallback, hash 
 		right_highlight = turnState === TurnDirection.RIGHT ? 'highlight' : 'nohighlight';
 		straight_highlight = turnState === TurnDirection.STRAIGHT ? 'highlight' : 'nohighlight';
 	}
-  
+
 	return <div className='w-100 col-12 col-md-8 position-relative'>
 		<div id="assam" className='assam' style={style}>
 			<img className='assam-img' src={assam}/>
@@ -386,16 +390,39 @@ export default function App() {
 	// handle carpet placement
 	const [placeState, setPlaceState] = useState(new Placement());
 
-	function place() {
+	async function place() {
 
 		// by now, the Placement is ready
+		if (placeState.carpet === null) {
+			alert('place called with null carpet');
+			return;
+		}
 
+		// define carpet
+		const newCarpet = placeState.carpet;
+		newCarpet.color = gameState.players[gameState.next_player].getTopCarpet();
 
+		// move carpet to board
+		try {
+			gameState.board.placeCarpet(newCarpet);
+		} catch (Exception) {
+			console.log(gameState.board.top_carpets);
+			console.log()
+
+			throw Exception;
+		}
+		gameState.players[gameState.next_player].deck.shift();
+
+		// update turn
 		gameState.next_action = Action.TURN;
 		gameState.next_player += 1;
 		if (gameState.next_player >= gameState.playercount) gameState.next_player = 0;
-		setGameState(gameState);
-		setHash(String(Math.random()));
+
+		// reset place state
+		setPlaceState(new Placement());
+
+		// update game state
+		await API.graphql(graphqlOperation(updateGame, { id, modified, players: gameState.players, board: gameState.board })) as GQLRes;;
 	}
 
 
