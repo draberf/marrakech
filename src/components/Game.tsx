@@ -129,6 +129,17 @@ function ActionButtons({game, rollCallback, placeState, placeCallback}: ActionBu
 	</>
 }
 
+function CarpetOverlapsTile(carpet: Carpet, [tile_x, tile_y]: [number, number]): boolean {
+	if (carpet.x == tile_x && carpet.y == tile_y) {
+		return true;
+	}
+	let sndtile = carpet.getSecondTile();
+	if (sndtile.x == tile_x && sndtile.y == tile_y) {
+		return true;
+	}
+	return false;
+}
+
 function GetFirstTileCandidates(board: gameBoard): Array<[number, number]> {
 	let validPositions: Array<Carpet> = board.getValidPositions();
 	let surroundingTiles: Array<[number, number]> = [
