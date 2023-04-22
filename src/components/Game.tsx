@@ -266,9 +266,15 @@ function Board({ game, turnState, turnCallback, placeState, placeCallback, hash 
 	}
 
 	// set arrow highlight
-	const left_highlight = turnState === TurnDirection.LEFT ? 'highlight' : 'nohighlight';
-	const right_highlight = turnState === TurnDirection.RIGHT ? 'highlight' : 'nohighlight';
-	const straight_highlight = turnState === TurnDirection.STRAIGHT ? 'highlight' : 'nohighlight';
+	let left_highlight = 'hidden';
+	let right_highlight = 'hidden';
+	let straight_highlight = 'hidden';
+
+	if (game.next_action === Action.TURN) {
+		left_highlight = turnState === TurnDirection.LEFT ? 'highlight' : 'nohighlight';
+		right_highlight = turnState === TurnDirection.RIGHT ? 'highlight' : 'nohighlight';
+		straight_highlight = turnState === TurnDirection.STRAIGHT ? 'highlight' : 'nohighlight';
+	}
   
 	return <div className='w-100 col-12 col-md-8 position-relative'>
 		<div id="assam" className='assam' style={style}>
