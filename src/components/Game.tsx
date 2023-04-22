@@ -82,23 +82,30 @@ type ActionButtonsProp = {
 	rollCallback: Function;
 	placeState: Placement;
 	placeCallback: Function;
+	resetCallback: Function;
 }
 
-function ActionButtons({game, rollCallback, placeState, placeCallback}: ActionButtonsProp) {
+function ActionButtons({game, rollCallback, placeState, placeCallback, resetCallback}: ActionButtonsProp) {
 
 	let rollButtonDisabled: boolean = game.next_action !== Action.TURN;
 	let placeButtonDisabled: boolean = game.next_action !== Action.PLACE || !placeState.ready;
+	let resetButtonDisabled: boolean = game.next_action !== Action.PLACE || !placeState.firstTile;
 
 	return <div className='row'>
 		<div className='col-6 col-md-12'>
 			<button className='btn btn-primary m-2 w-100' disabled={rollButtonDisabled} onClick={() => rollCallback()}>
-				Hodit kostkou
+				Roll
 			</button>
 		</div>
 		<div className='col-6 col-md-12'>
-			<button className='btn btn-primary m-2 w-100' disabled={placeButtonDisabled} onClick={() => placeCallback()}>
-				Položit koberec
+			<div className='d-flex flex-row justify-content-around'>
+				<button className='btn btn-success m-2 w-50' disabled={placeButtonDisabled} onClick={() => placeCallback()}>
+					Place
 			</button>
+				<button className='btn btn-danger m-2 w-25' disabled={placeButtonDisabled} onClick={() => resetCallback()}>
+					Reset
+				</button>
+			</div>
 		</div>
 	</div>
 }
@@ -425,6 +432,10 @@ export default function App() {
 		await API.graphql(graphqlOperation(updateGame, { id, modified, players: gameState.players, board: gameState.board })) as GQLRes;;
 	}
 
+	function reset() {
+		setPlaceState(new Placement());
+	}
+
 
 	return <div className='container'>
 		<div className='row'>
@@ -440,7 +451,7 @@ export default function App() {
 			<div className='col-12 col-md-4 d-flex flex-column justify-content-center'>
 				<div className='row'>
 					<div className='col-12'>
-						<ActionButtons game={gameState} rollCallback={roll} placeState={placeState} placeCallback={place} />
+						<ActionButtons game={gameState} rollCallback={roll} placeState={placeState} placeCallback={place} resetCallback={reset}/>
 					</div>
 					<div className='col-12'>
 						<PlayersArea game={gameState} />
