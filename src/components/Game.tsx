@@ -72,7 +72,7 @@ function StatusBar({game}: GameObjectProp, update: string) {
 	const action = game.next_action === Action.TURN ? "Turning Assam" : "Placing a carpet";
 	return <>
 		<h2 className='text-center'>
-			{`\(TURN ${game.turn}\) ${playerName}: ${action} `}
+			{`\(TURN ${game.turn + 1}\) ${playerName}: ${action} `}
 		</h2>
 	</>
 }
