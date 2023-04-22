@@ -153,12 +153,7 @@ function GetFirstTileCandidates(board: gameBoard): Array<[number, number]> {
 	for (let [tile_x, tile_y] of surroundingTiles) {
 		if (board.isOutOfBounds(tile_x, tile_y)) { continue; }
 		for (let carpet of validPositions) {
-			if (carpet.x == tile_x && carpet.y == tile_y) {
-				tiles.push([tile_x, tile_y]);
-				break;
-			}
-			let sndtile = carpet.getSecondTile();
-			if (sndtile.x == tile_x && sndtile.y == tile_y) {
+			if (CarpetOverlapsTile(carpet, [tile_x, tile_y])) {
 				tiles.push([tile_x, tile_y]);
 				break;
 			}
@@ -166,6 +161,31 @@ function GetFirstTileCandidates(board: gameBoard): Array<[number, number]> {
 	}
 
 	return tiles;
+}
+
+function GetCarpetCandidates(board: gameBoard, firstTile: [number, number]): Array<[Carpet, [number, number]]> {
+	let candidates: Array<[Carpet, [number, number]]> = [];
+
+	let carpets = board.getValidPositions();
+
+	for (let carpet of carpets) {
+		
+		// eliminate pointless carpets
+		if (!CarpetOverlapsTile(carpet, firstTile)) { continue; }
+
+		let sndtile = carpet.getSecondTile();
+		let [tile_x, tile_y] = firstTile;
+
+		if (carpet.x == tile_x && carpet.y == tile_y) {
+			candidates.push([carpet, [sndtile.x, sndtile.y]]);
+			continue;
+		}
+		
+		// otherwise it's the secondtile that overlaps
+		candidates.push([carpet, firstTile]);
+	}
+
+	return candidates;
 }
 
 type BoardProp = {
@@ -188,12 +208,13 @@ function Board({ game, turnState, turnCallback, placeState, placeCallback, hash 
 		transform: `rotate(${deg.toString()}deg)`,
 	}
 
-	let tileCandidates: Array<[number, number]> = []
+	let tileCandidates: Array<[number, number]> = [];
+	let carpetCandidates: Array<[Carpet, [number, number]]> = [];
 	if (game.next_action == Action.PLACE) {
 		if (placeState.tile1_x == -1) {
 			tileCandidates = GetFirstTileCandidates(game.board);
 		} else {
-			tileCandidates = GetSecondTileCandidates(game.board);
+			carpetCandidates = GetCarpetCandidates(game.board, [placeState.tile1_x, placeState.tile1_y]);
 		}
 	}
 
