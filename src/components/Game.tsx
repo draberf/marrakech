@@ -68,15 +68,11 @@ type FunctionalProp = {
 
 function StatusBar({game}: GameObjectProp, update: string) {
 	// todo
-	const colors = [
-		'Player red turn',
-		'Player blue turn',
-		'Player yellow turn',
-		'Player orange turn',
-	];
+	const playerName = "<player name>";
+	const action = game.next_action === Action.TURN ? "Turning Assam" : "Placing a carpet";
 	return <>
 		<h2 className='text-center'>
-			{colors[game.turn % game.playercount]}
+			{`\(TURN ${game.turn}\) ${playerName}: ${action} `}
 		</h2>
 	</>
 }
