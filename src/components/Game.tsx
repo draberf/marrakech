@@ -2,7 +2,7 @@ import React, { EventHandler, useEffect, useState } from 'react';
 import { BindingElement } from 'typescript';
 
 // game state
-import { Color, Direction, Player, Game, Carpet, Action } from '../game';
+import { Color, Direction, Player, Game, Carpet, Action, Board as gameBoard } from '../game';
 
 // images
 import blue_half from '../assets/carpets/blue.png'
@@ -129,6 +129,34 @@ function ActionButtons({game, rollCallback, placeState, placeCallback}: ActionBu
 	</>
 }
 
+function GetFirstTileCandidates(board: gameBoard): Array<[number, number]> {
+	let validPositions: Array<Carpet> = board.getValidPositions();
+	let surroundingTiles: Array<[number, number]> = [
+		[board.assam_x - 1, board.assam_y],
+		[board.assam_x + 1, board.assam_y],
+		[board.assam_x, board.assam_y - 1],
+		[board.assam_x, board.assam_y + 1]
+	];
+	let tiles: Array<[number, number]> = [];
+
+	for (let [tile_x, tile_y] of surroundingTiles) {
+		if (board.isOutOfBounds(tile_x, tile_y)) { continue; }
+		for (let carpet of validPositions) {
+			if (carpet.x == tile_x && carpet.y == tile_y) {
+				tiles.push([tile_x, tile_y]);
+				break;
+			}
+			let sndtile = carpet.getSecondTile();
+			if (sndtile.x == tile_x && sndtile.y == tile_y) {
+				tiles.push([tile_x, tile_y]);
+				break;
+			}
+ 		}
+	}
+
+	return tiles;
+}
+
 type BoardProp = {
 	game: Game;
 	turnState: TurnDirection;
@@ -149,9 +177,13 @@ function Board({ game, turnState, turnCallback, placeState, placeCallback, hash 
 		transform: `rotate(${deg.toString()}deg)`,
 	}
 
-	let carpetPlacements: Array<Carpet> = [];
+	let tileCandidates: Array<[number, number]> = []
 	if (game.next_action == Action.PLACE) {
-		carpetPlacements = game.board.getValidPositions();
+		if (placeState.tile1_x == -1) {
+			tileCandidates = GetFirstTileCandidates(game.board);
+		} else {
+			tileCandidates = GetSecondTileCandidates(game.board);
+		}
 	}
 
 	for (let y = -1; y < 8; y++) {
