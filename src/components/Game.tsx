@@ -190,7 +190,7 @@ function GetCarpetCandidates(board: gameBoard, firstTile: [number, number]): Arr
 		}
 		
 		// otherwise it's the secondtile that overlaps
-		candidates.push([carpet, firstTile]);
+		candidates.push([carpet, [carpet.x, carpet.y]]);
 	}
 
 	return candidates;
