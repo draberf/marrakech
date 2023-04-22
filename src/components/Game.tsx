@@ -352,9 +352,18 @@ export default function App() {
 	const { id } = useParams();
 
 	const [gameState, setGameState] = useState(new Game([
-		new Player([Color.RED, Color.RED], 30),
-		new Player([Color.BLUE, Color.BLUE], 30)
+		new Player([...Array(10)].map(()=>Color.RED), 30),
+		new Player([...Array(10)].map(()=>Color.BLUE), 30)
 	]));
+
+	// hack: not going back to change server-side implementation
+	// COLOR -> PLAYER
+	const colorAssignments = [-1, 0, 1, 0, 1];
+	if (gameState.playercount > 2) {
+		colorAssignments[3] = 2;
+		colorAssignments[4] = 3;
+	}
+	
 	const [hash, setHash] = useState("");
 	const [modified, setModified] = useState("");
 	// handle assam movement
@@ -386,6 +395,15 @@ export default function App() {
 		setTurnState(TurnDirection.STRAIGHT);
 		const moves = Array(1,2,2,3,3,4)[Math.floor(Math.random()*6)];
 		gameState.board.moveAssam(moves);
+
+		// pay
+		const colorUnderAssam = gameState.board.color(gameState.board.assam_x, gameState.board.assam_y);
+		if (colorUnderAssam !== Color.NONE && colorAssignments[colorUnderAssam] !== gameState.next_player) {
+			const amount = gameState.board.findContiguousUnderAssam().length;
+			gameState.players[gameState.next_player].pay(amount);
+			gameState.players[colorAssignments[colorUnderAssam]].receive(amount);
+		}
+
 		gameState.next_action = Action.PLACE;
 
 		await API.graphql(graphqlOperation(updateGame, { id, modified, players: gameState.players, board: gameState.board })) as GQLRes;;
