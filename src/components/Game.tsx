@@ -320,8 +320,8 @@ function Tile({ game, coordX, coordY, highlight_style, onClickCallback }: TilePr
 		arcDir = 'rotate(90deg)';
 	  }
   
-	  return <div key={(coordY*9 + coordX).toString()} className="tile">
-		<img src={arc} className='floor' style={{transform: arcDir}}/>
+	  return <div className="tile">
+		<img src={arc} className="floor" style={{transform: arcDir}}/>
 	  </div>;
 	} 
   
@@ -334,8 +334,10 @@ function Tile({ game, coordX, coordY, highlight_style, onClickCallback }: TilePr
 	  floorSrc = Array(red_half, blue_half, yellow_half, orange_half)[color-1];
 	}
 	
-	const content = <img src={floorSrc} className='floor' alt={dirTransform} style={{transform:dirTransform}}/>;  
-	return <div key={(coordY*9 + coordX).toString()} className={`tile ${highlight_style}`} onClick={() => onClickCallback}>{content}</div>;
+	const content = <img src={floorSrc} className='floor' style={{transform:dirTransform}}/>;  
+	return <div className={`tile ${highlight_style}`} onClick={() => onClickCallback()}>
+		{content}
+	</div>;
 }
   
 export default function App() {
