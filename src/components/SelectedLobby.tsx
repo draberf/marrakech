@@ -11,6 +11,7 @@ export default function SelectedLobby() {
 
 	const [cacheId, setCacheId] = useState<string | null>(null);
 	const [players, setPlayers] = useState<Player[]>([]);
+	const [board, setBoard] = useState<Player[]>([]);
 	const [modified, setModified] = useState("");
 	const [refresh, setRefresh] = useState<NodeJS.Timer | null>(null);
 
@@ -18,6 +19,7 @@ export default function SelectedLobby() {
 		const res = await API.graphql(graphqlOperation(getGame, { id })) as GQLRes;
 		setModified(res.data.getGame.modified);
 		setPlayers(res.data.getGame.players);
+		setBoard(res.data.getGame.board);
 		if (res.data.getGame.players.filter((pl: any) => pl.id === null).length === 0) {
 			window.location.href = `/${id}/game`;
 		}	
@@ -26,7 +28,7 @@ export default function SelectedLobby() {
 	async function joinGame(idx: number) {
 		const data = players;
 		data[idx].id = cacheId as string;
-		const res = await API.graphql(graphqlOperation(updateGame, { id, modified, players: data })) as GQLRes;
+		const res = await API.graphql(graphqlOperation(updateGame, { id, modified, players: data, board: board })) as GQLRes;
 		setPlayers(res.data.updateGame.players);
 		setModified(res.data.updateGame.modified);
 	}

@@ -19,6 +19,11 @@ import arc from '../assets/arc.png'
 import assam from '../assets/assam.png'
 import dirham from '../assets/dirham.png'
 import { FaArrowDown, FaArrowLeft, FaArrowRight } from 'react-icons/fa'
+import { API, graphqlOperation } from 'aws-amplify';
+import updateGame from '../api/updateGame';
+import { useParams } from 'react-router-dom';
+import { GQLRes } from '../api/types';
+import getGame from '../api/getGame';
 
 const colors_half = [
   blue_half, orange_half, red_half, yellow_half
@@ -201,7 +206,6 @@ type BoardProp = {
 }
 
 function Board({ game, turnState, turnCallback, placeState, placeCallback, hash }: BoardProp) {
-	console.log(game)
 	const tiles = [];
 	const deg = Array(270,180,90,0)[game.board.assam_dir];
 	const style = {
@@ -235,7 +239,7 @@ function Board({ game, turnState, turnCallback, placeState, placeCallback, hash 
 	}
 
 	for (let y = -1; y < 8; y++) {
-		let row = []
+		const row = []
 		for (let x = -1; x < 8; x++) {
 			// calculate tile style and callback
 			let tileStyle = '';
@@ -261,27 +265,21 @@ function Board({ game, turnState, turnCallback, placeState, placeCallback, hash 
 	  tiles.push(<div key={y} className='row'>{row}</div>)
 	}
 
-	// set arrow appearance
-	let left_style = 'hidden';
-	let right_style = 'hidden';
-	let straight_style = 'hidden';
-
-	if (game.next_action === Action.TURN) {
-		left_style = turnState === TurnDirection.LEFT ? 'highlight' : 'nohighlight';
-		right_style = turnState === TurnDirection.RIGHT ? 'highlight' : 'nohighlight';
-		straight_style = turnState === TurnDirection.STRAIGHT ? 'highlight' : 'nohighlight';
-	}
+	// set arrow highlight
+	const left_highlight = turnState === TurnDirection.LEFT ? 'highlight' : 'nohighlight';
+	const right_highlight = turnState === TurnDirection.RIGHT ? 'highlight' : 'nohighlight';
+	const straight_highlight = turnState === TurnDirection.STRAIGHT ? 'highlight' : 'nohighlight';
   
 	return <div className='w-100 col-12 col-md-8 position-relative'>
 		<div id="assam" className='assam' style={style}>
 			<img className='assam-img' src={assam}/>
-			<span className={`assam-arrow arrow-left ${left_style}`} onClick={() => turnCallback(TurnDirection.LEFT)}>
+			<span className={`assam-arrow arrow-left ${left_highlight}`} onClick={() => turnCallback(TurnDirection.LEFT)}>
 				<FaArrowRight />
   			</span>
-			<span className={`assam-arrow arrow-right ${right_style}`} onClick={() => turnCallback(TurnDirection.RIGHT)}>
+			<span className={`assam-arrow arrow-right ${right_highlight}`} onClick={() => turnCallback(TurnDirection.RIGHT)}>
 			  	<FaArrowLeft />
   			</span>
-			<span className={`assam-arrow arrow-straight ${straight_style}`} onClick={() => turnCallback(TurnDirection.STRAIGHT)}>
+			<span className={`assam-arrow arrow-straight ${straight_highlight}`} onClick={() => turnCallback(TurnDirection.STRAIGHT)}>
 				<FaArrowDown />
   			</span>
 		</div>
@@ -294,7 +292,7 @@ function Tile({ game, coordX, coordY, highlight_style, onClickCallback }: TilePr
 	// clear border tiles
 	if (coordX < 0 || coordY < 0 || coordX >= 7 || coordY >= 7) {
   
-	  let arcDir: string = 'rotate(270deg)';
+	  let arcDir = 'rotate(270deg)';
 	  if (coordY < 0 && coordX < 7) {
 		arcDir = coordX % 2 ? 'rotate(0deg)' : 'rotate(90deg)';
 	  }
@@ -335,32 +333,36 @@ function Tile({ game, coordX, coordY, highlight_style, onClickCallback }: TilePr
 }
   
 export default function App() {
-	let refresh: NodeJS.Timer;
+	const { id } = useParams();
 
-	// useEffect(() => {
-	// 	if (!refresh) {
-	// 		refresh = setInterval(() => {
-	// 			console.log('todo fetch gameState')
-	// 			gameState.board.moveAssam(1);
-	// 			setGameState(gameState);
-	// 			setHash(String(Math.random()))
-	// 		}, 1000)
-	// 	}
-	// }, []);
-
-	// predat z api
-	const game = new Game([
-	  new Player([Color.RED, Color.RED], 30),
-	  new Player([Color.BLUE, Color.BLUE], 30)
-	]);
-
-	const [gameState, setGameState] = useState(game);
+	const [gameState, setGameState] = useState(new Game([
+		new Player([Color.RED, Color.RED], 30),
+		new Player([Color.BLUE, Color.BLUE], 30)
+	]));
 	const [hash, setHash] = useState("");
-
+	const [modified, setModified] = useState("");
 	// handle assam movement
 	const [turnState, setTurnState] = useState(TurnDirection.STRAIGHT);
+	let refresh: NodeJS.Timer;
 
-	function roll() {
+	useEffect(() => {
+		if (!refresh) {
+			refresh = setInterval(() => {
+				fetchGame();
+			}, 2000)
+		}
+	}, []);
+
+	async function fetchGame() {		
+		const res = await API.graphql(graphqlOperation(getGame, { id })) as GQLRes;
+		setModified(res.data.getGame.modified);
+		gameState.board.setValues(res.data.getGame.board);
+		// gameState.players = res.data.getGame.players;
+		setGameState(gameState);
+		setHash(String(Math.random()));
+	}
+
+	async function roll() {
 		if (turnState !== TurnDirection.STRAIGHT) {
 			if (turnState === TurnDirection.LEFT) gameState.board.turnAssam(false);
 			if (turnState === TurnDirection.RIGHT) gameState.board.turnAssam(true);
@@ -369,8 +371,8 @@ export default function App() {
 		const moves = Array(1,2,2,3,3,4)[Math.floor(Math.random()*6)];
 		gameState.board.moveAssam(moves);
 		gameState.next_action = Action.PLACE;
-		setGameState(gameState);
-		setHash(String(Math.random()));
+
+		await API.graphql(graphqlOperation(updateGame, { id, modified, players: gameState.players, board: gameState.board })) as GQLRes;;
 	}
 
 	// handle carpet placement
