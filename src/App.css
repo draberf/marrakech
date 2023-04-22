@@ -210,3 +210,28 @@ body {
   background-color: rgb(76, 50, 221);
   text-decoration: none;
 }
+
+.tilehighlight img{
+  filter:saturate(3);
+}
+
+.tilehighlight:hover {
+  filter: brightness(90%);
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+.playerHighlight {
+  box-shadow: inset 0px 0px 5px #419D8A;
+}
+
+.playerLine {
+  max-height: 10vh;
+  padding: 3px;
+}
+
+.playerLine img {
+  max-height: 4vh;
+}
