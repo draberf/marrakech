@@ -230,7 +230,7 @@ function Board({ game, turnState, turnCallback, placeState, placeCallback, hash 
 
 	let tileCandidates: Array<[number, number]> = [];
 	let carpetCandidates: Array<[Carpet, [number, number]]> = [];
-	if (game.next_action == Action.PLACE) {
+	if (game.next_action === Action.PLACE) {
 		if (!placeState.firstTile) {
 			tileCandidates = GetFirstTileCandidates(game.board);
 		} else {
