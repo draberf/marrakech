@@ -53,6 +53,8 @@ type TileProp = {
 	game: Game;
 	coordX: number;
 	coordY: number;
+	highlight_style: string;
+	onClickCallback: Function;
 }
 
 type FunctionalProp = {
@@ -222,7 +224,11 @@ function Board({ game, turnState, turnCallback, placeState, placeCallback, hash 
 	for (let y = -1; y < 8; y++) {
 		let row = []
 		for (let x = -1; x < 8; x++) {
-			row.push(<Tile key={x+"-"+y} game={game} coordX={x} coordY={y}/>);
+			// calculate tile style and callback
+			let tileStyle = '';
+			let tileCallback = () => {};
+
+			row.push(<Tile key={x+"-"+y} game={game} coordX={x} coordY={y} highlight_style={tileStyle} onClickCallback={tileCallback}/>);
 		}
 	  tiles.push(<div key={y} className='row'>{row}</div>)
 	}
@@ -255,7 +261,9 @@ function Board({ game, turnState, turnCallback, placeState, placeCallback, hash 
 	</div>
 }
   
-function Tile({ game, coordX, coordY }: TileProp) {
+function Tile({ game, coordX, coordY, highlight_style, onClickCallback }: TileProp) {
+	
+	// clear border tiles
 	if (coordX < 0 || coordY < 0 || coordX >= 7 || coordY >= 7) {
   
 	  let arcDir: string = 'rotate(270deg)';
@@ -290,13 +298,12 @@ function Tile({ game, coordX, coordY }: TileProp) {
 	const dir = game.board.direction(coordX, coordY);
 	const dirTransform: string = GetDirectionalTransform(dir);
   
-  
 	if (color) {
-	  floorSrc = Array(red_half, blue_half)[color-1]
+	  floorSrc = Array(red_half, blue_half, yellow_half, orange_half)[color-1];
 	}
 	
 	const content = <img src={floorSrc} className='floor' alt={dirTransform} style={{transform:dirTransform}}/>;  
-	return <div key={(coordY*9 + coordX).toString()} className="tile">{content}</div>;
+	return <div key={(coordY*9 + coordX).toString()} className={`tile ${highlight_style}`} onClick={() => onClickCallback}>{content}</div>;
 }
   
 export default function App() {
