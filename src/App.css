@@ -211,8 +211,8 @@ body {
   text-decoration: none;
 }
 
-.tilehighlight {
-  box-shadow: inset 0px 0px 20px rgba(0,255,0,1);
+.tilehighlight img{
+  filter:saturate(3);
 }
 
 .tilehighlight:hover {
