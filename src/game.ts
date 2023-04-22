@@ -108,7 +108,6 @@ export class Player {
 
     pay(amount: number): void {
         this.dirhams = Math.max(this.dirhams-amount, 0);
-        // TODO: specify behavior on cash out
     }
 
     receive(amount: number): void {
@@ -488,7 +487,5 @@ export class Game {
         this.board = new Board();
         this.turn = 0;
 
-        // TODO: Add association between player and color
-        // TODO: Add players as Player objects
     }
 }
