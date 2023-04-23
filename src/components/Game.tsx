@@ -26,6 +26,7 @@ import updateGame from '../api/updateGame';
 import { useParams } from 'react-router-dom';
 import { GQLRes } from '../api/types';
 import getGame from '../api/getGame';
+import Dice from 'react-dice-roll';
 
 enum TurnDirection {STRAIGHT, LEFT, RIGHT};
 
@@ -101,19 +102,26 @@ function ActionButtons({game, rollCallback, placeState, placeCallback, resetCall
 	let resetButtonDisabled: boolean = game.next_action !== Action.PLACE || !placeState.firstTile;
 
 	return <div className='row'>
-		<div className='col-6 col-md-12'>
+		<div className='col-4 col-md-10'>
 			<button className='btn btn-primary m-2 w-100' disabled={(rollButtonDisabled || !myTurn)} onClick={() => rollCallback()}>
 				Roll
 			</button>
 		</div>
-		<div className='col-6 col-md-12'>
-			<div className='d-flex flex-row justify-content-around'>
-				<button className='btn btn-success m-2 w-50' disabled={placeButtonDisabled || !myTurn} onClick={() => placeCallback()}>
-					Place
-				</button>
-				<button className='btn btn-danger m-2 w-25' disabled={resetButtonDisabled || !myTurn} onClick={() => resetCallback()}>
-					Reset
-				</button>
+		<div id="rolldice" className='col-1 col-md-2 d-flex flex-row justify-content-center align-items-center'>
+			<Dice cheatValue={game.last_rolled as 1 | 2 | 3 | 4 | 5 | 6} size={30}/>
+		</div>
+		<div className='col-7 col-md-12'>
+			<div className='d-flex flex-row justify-content-around row'>
+				<div className='col-6'>
+					<button className='btn btn-success m-2 w-100' disabled={placeButtonDisabled || !myTurn} onClick={() => placeCallback()}>
+						Place
+					</button>
+				</div>
+				<div className='col-6'>
+					<button className='btn btn-danger m-2 w-100' disabled={resetButtonDisabled || !myTurn} onClick={() => resetCallback()}>
+						Reset
+					</button>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -398,7 +406,7 @@ export default function App() {
 	useInterval(async () => {
 		await fetchGame();
 		console.log('Fetching new states..')
-	}, 1000);
+	}, 2000);
 
 	async function fetchGame() {
 		const res = await API.graphql(graphqlOperation(getGame, { id })) as GQLRes;
@@ -448,6 +456,7 @@ export default function App() {
 			}
 			setTurnState(TurnDirection.STRAIGHT);
 			const moves = Array(1,2,2,3,3,4)[Math.floor(Math.random()*6)];
+			gameState.last_rolled = moves;
 			gameState.board.moveAssam(moves);
 
 			// pay
@@ -467,6 +476,12 @@ export default function App() {
 				last_rolled: gameState.last_rolled,
 			}
 			const res = await API.graphql(graphqlOperation(updateGame, { id, modified, players: gameState.players, board: gameState.board, turnInfo: turnInfo })) as GQLRes;
+			
+			const dice = document.getElementById('rolldice')?.firstChild as HTMLElement;
+			if (dice) {
+				dice.setAttribute('cheatValue', String(gameState.last_rolled));
+				dice.click();
+			}
 			setModified(res.data.updateGame.modified);
 		}
 	}
