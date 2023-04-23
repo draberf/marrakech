@@ -267,3 +267,22 @@ body {
   padding: 2rem;
   font-size: max(3vw, 20px);
 }
+
+.tutorial-one {
+  max-height: 70vh;
+  max-width: 100%;
+}
+
+.mw-25 {
+  max-width: 25%;
+}
+
+.mw-100-600 {
+  max-width: min(100%, 600px);
+  margin: -12% -10% -12% -10%;
+
+}
+
+.img-crop {
+  overflow: hidden;
+}
