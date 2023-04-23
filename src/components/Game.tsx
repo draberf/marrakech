@@ -154,13 +154,13 @@ function PlayersArea({game, colorAssignments}: PlayersAreaProp) {
 			<td>{game.players[i-1].name}:</td>
 			<td><img src={playerColorSrc}></img> {player.deck.length}</td>
 			<td><img src={dirham}></img> {player.dirhams}</td>
-			<td># {colorCounts[i]}</td>
+			<td># {colorCounts[i-1]}</td>
 		</tr>
 	})
 
-	return <table className='table'>
+	return <table className='table'><tbody>
 		{players}
-	</table>
+	</tbody></table>
 }
 
 function CarpetOverlapsTile(carpet: Carpet, [tile_x, tile_y]: [number, number]): boolean {
