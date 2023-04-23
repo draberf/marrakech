@@ -94,12 +94,15 @@ export function checkOverlap(carpet1: Carpet, carpet2: Carpet): boolean {
  * 
  */
 export class Player {
-
+    id: string;
+    name: string;
     deck: Array<Color>;
     dirhams: number;
-    constructor (deck: Array<Color>, dirhams: number) {
+    constructor (deck: Array<Color>, dirhams: number, id = "default-id", name = "default-name") {
         this.deck = deck;
         this.dirhams = dirhams;
+        this.id = id;
+        this.name = name;
     }
 
     getTopCarpet(): Color {

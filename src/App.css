@@ -235,3 +235,19 @@ body {
 .playerLine img {
   max-height: 4vh;
 }
+
+.name-input {
+  max-width: 20rem;
+}
+
+.loading-animation {
+  position: absolute;
+  top: 45%;
+  left: 40%;
+}
+
+.loading-text {
+  position: absolute;
+  top: 45.2%;
+  left: calc(40% + 3rem);
+}

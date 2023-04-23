@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { API, graphqlOperation } from "aws-amplify";
 import getGame from "../api/getGame";
@@ -25,19 +25,37 @@ export default function SelectedLobby() {
 		}	
 	}
 
+	function validateSelf(event: ChangeEvent) {
+		const elem = (event.target as HTMLInputElement);
+		if (!elem.value) {
+			elem.classList.add('is-invalid');
+		} else {
+			elem.classList.remove('is-invalid');
+		}
+	}
+
 	async function joinGame(idx: number) {
+		const name = (document.getElementById('player-' + idx) as HTMLInputElement).value;
+		if (!name) {
+			document.getElementById('player-' + idx)?.classList.add('is-invalid');
+			return;
+		}
+
 		const data = players;
 		data[idx].id = cacheId as string;
+		data[idx].name = name;
 		const res = await API.graphql(graphqlOperation(updateGame, { id, modified, players: data, board: board })) as GQLRes;
 		setPlayers(res.data.updateGame.players);
 		setModified(res.data.updateGame.modified);
 	}
 
 	useEffect(() => {
-		setCacheId(localStorage.getItem("_userId"))
-		if (!cacheId) {
-			setCacheId(crypto.randomUUID());
-			localStorage.setItem("_userId", cacheId as string);
+		const id = localStorage.getItem("_userId");
+		setCacheId(id)
+		if (!id || id === 'null') {
+			const newId = crypto.randomUUID();
+			setCacheId(newId);
+			localStorage.setItem("_userId", newId as string);
 		}
 
 		fetchGame();
@@ -58,10 +76,13 @@ export default function SelectedLobby() {
 				</h3>
 				{
 					players.map((row, idx) => <div key={idx} className="row text-center mb-2">		
-						<div className="col-7">
+						<div className="col-3">
 							Player {idx + 1}
 						</div>
-						<div className="col-5">
+						<div className="col-6">
+							<input id={"player-" + idx } key={idx} className="form-control my-1" type="text" onChange={validateSelf} placeholder={"Player " + (idx + 1)} />
+						</div>
+						<div className="col-3">
 							{ !row.id &&
 							<button className="btn btn-success" onClick={() => {joinGame(idx)}}>
 								Join

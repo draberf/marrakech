@@ -1,4 +1,4 @@
-import React, { EventHandler, useEffect, useState } from 'react';
+import React, { EventHandler, useEffect, useRef, useState } from 'react';
 import { BindingElement } from 'typescript';
 
 // game state
@@ -67,7 +67,7 @@ function StatusBar({game}: GameObjectProp, update: string) {
 	const action = game.next_action === Action.TURN ? "Turning Assam" : "Placing a carpet";
 	return <>
 		<h2 className='text-center'>
-			{`\(TURN ${game.turn + 1}\) ${playerName}: ${action} `}
+			{`\(TURN ${game.turn + 1}\) ${game.players[game.next_player].name}: ${action} `}
 		</h2>
 	</>
 }
@@ -106,9 +106,6 @@ function ActionButtons({game, rollCallback, placeState, placeCallback, resetCall
 }
 
 function PlayersArea({game}: GameObjectProp) {
-
-	// todo: get player name
-
 	let i = 0;
 
 	let players = game.players.map(player => {
@@ -120,7 +117,7 @@ function PlayersArea({game}: GameObjectProp) {
 		i++;
 		
 		return <div key={'player-'+i} className={highlight}>
-			{`<Player name>`}: <img src={playerColorSrc}></img> {player.deck.length} <img src={dirham}></img> {player.dirhams}
+			{game.players[i-1].name}: <img src={playerColorSrc}></img> {player.deck.length} <img src={dirham}></img> {player.dirhams}
 		</div>
 	})
 
@@ -130,11 +127,11 @@ function PlayersArea({game}: GameObjectProp) {
 }
 
 function CarpetOverlapsTile(carpet: Carpet, [tile_x, tile_y]: [number, number]): boolean {
-	if (carpet.x == tile_x && carpet.y == tile_y) {
+	if (carpet.x === tile_x && carpet.y === tile_y) {
 		return true;
 	}
 	let sndtile = carpet.getSecondTile();
-	if (sndtile.x == tile_x && sndtile.y == tile_y) {
+	if (sndtile.x === tile_x && sndtile.y === tile_y) {
 		return true;
 	}
 	return false;
@@ -176,7 +173,7 @@ function GetCarpetCandidates(board: gameBoard, firstTile: [number, number]): Arr
 		let sndtile = carpet.getSecondTile();
 		let [tile_x, tile_y] = firstTile;
 
-		if (carpet.x == tile_x && carpet.y == tile_y) {
+		if (carpet.x === tile_x && carpet.y === tile_y) {
 			candidates.push([carpet, [sndtile.x, sndtile.y]]);
 			continue;
 		}
@@ -186,6 +183,26 @@ function GetCarpetCandidates(board: gameBoard, firstTile: [number, number]): Arr
 	}
 
 	return candidates;
+}
+
+// https://overreacted.io/making-setinterval-declarative-with-react-hooks/
+// @ts-ignore
+function useInterval(callback, delay) {
+	const savedCallback = useRef();
+  
+	useEffect(() => {
+	  savedCallback.current = callback;
+	});
+  
+	useEffect(() => {
+	  function tick() {
+		// @ts-ignore
+		savedCallback.current();
+	  }
+  
+	  let id = setInterval(tick, delay);
+	  return () => clearInterval(id);
+	}, [delay]);
 }
 
 type BoardProp = {
@@ -351,103 +368,118 @@ function Tile({ game, coordX, coordY, highlight_style, onClickCallback }: TilePr
 export default function App() {
 	const { id } = useParams();
 
-	const [gameState, setGameState] = useState(new Game([
-		new Player([...Array(10)].map(()=>Color.RED), 30),
-		new Player([...Array(10)].map(()=>Color.BLUE), 30)
-	]));
 
 	// hack: not going back to change server-side implementation
 	// COLOR -> PLAYER
-	const colorAssignments = [-1, 0, 1, 0, 1];
-	if (gameState.playercount > 2) {
-		colorAssignments[3] = 2;
-		colorAssignments[4] = 3;
-	}
-	
+	const colorAssignments = [-1, 0, 1, 0, 1]; // todo
+	// if (gameState.playercount > 2) {
+	// 	colorAssignments[3] = 2;
+	// 	colorAssignments[4] = 3;
+	// }
+
+	const [gameState, setGameState] = useState<Game>();
 	const [hash, setHash] = useState("");
 	const [modified, setModified] = useState("");
 	// handle assam movement
 	const [turnState, setTurnState] = useState(TurnDirection.STRAIGHT);
-	let refresh: NodeJS.Timer;
 
-	useEffect(() => {
-		if (!refresh) {
-			refresh = setInterval(() => {
-				fetchGame();
-			}, 2000)
-		}
-	}, []);
+	useInterval(async () => {
+		await fetchGame();
+		console.log('Fetching new states..')
+	}, 2000);
 
-	async function fetchGame() {		
+	async function fetchGame() {
 		const res = await API.graphql(graphqlOperation(getGame, { id })) as GQLRes;
 		setModified(res.data.getGame.modified);
+		if (!gameState) {
+			const players = [];
+			for (const player of res.data.getGame.players) {
+				players.push(new Player(
+					player.deck,
+					player.dirhams,
+					player.id,
+					player.name,
+				))
+			}
+			const game = new Game(players);
+			game.board.setValues(res.data.getGame.board);
+			setGameState(game);
+			setHash(String(Math.random()));
+			return;
+		}
+
 		gameState.board.setValues(res.data.getGame.board);
-		// gameState.players = res.data.getGame.players;
+		// gameState.players = res.data.getGame.players; // todo
 		setGameState(gameState);
 		setHash(String(Math.random()));
 	}
 
 	async function roll() {
-		if (turnState !== TurnDirection.STRAIGHT) {
-			if (turnState === TurnDirection.LEFT) gameState.board.turnAssam(false);
-			if (turnState === TurnDirection.RIGHT) gameState.board.turnAssam(true);
+		if (gameState) {
+			if (turnState !== TurnDirection.STRAIGHT) {
+				if (turnState === TurnDirection.LEFT) gameState.board.turnAssam(false);
+				if (turnState === TurnDirection.RIGHT) gameState.board.turnAssam(true);
+			}
+			setTurnState(TurnDirection.STRAIGHT);
+			const moves = Array(1,2,2,3,3,4)[Math.floor(Math.random()*6)];
+			gameState.board.moveAssam(moves);
+
+			// pay
+			const colorUnderAssam = gameState.board.color(gameState.board.assam_x, gameState.board.assam_y);
+			if (colorUnderAssam !== Color.NONE && colorAssignments[colorUnderAssam] !== gameState.next_player) {
+				const amount = gameState.board.findContiguousUnderAssam().length;
+				gameState.players[gameState.next_player].pay(amount);
+				gameState.players[colorAssignments[colorUnderAssam]].receive(amount);
+			}
+
+			gameState.next_action = Action.PLACE;
+
+			const res = await API.graphql(graphqlOperation(updateGame, { id, modified, players: gameState.players, board: gameState.board })) as GQLRes;
+			setModified(res.data.updateGame.modified);
 		}
-		setTurnState(TurnDirection.STRAIGHT);
-		const moves = Array(1,2,2,3,3,4)[Math.floor(Math.random()*6)];
-		gameState.board.moveAssam(moves);
-
-		// pay
-		const colorUnderAssam = gameState.board.color(gameState.board.assam_x, gameState.board.assam_y);
-		if (colorUnderAssam !== Color.NONE && colorAssignments[colorUnderAssam] !== gameState.next_player) {
-			const amount = gameState.board.findContiguousUnderAssam().length;
-			gameState.players[gameState.next_player].pay(amount);
-			gameState.players[colorAssignments[colorUnderAssam]].receive(amount);
-		}
-
-		gameState.next_action = Action.PLACE;
-
-		await API.graphql(graphqlOperation(updateGame, { id, modified, players: gameState.players, board: gameState.board })) as GQLRes;;
 	}
 
 	// handle carpet placement
 	const [placeState, setPlaceState] = useState(new Placement());
 
 	async function place() {
+		if (gameState) {
+			// by now, the Placement is ready
+			if (placeState.carpet === null) {
+				alert('place called with null carpet');
+				return;
+			}
 
-		// by now, the Placement is ready
-		if (placeState.carpet == null) {
-			alert('place called with null carpet');
-			return;
+			// define carpet
+			const newCarpet = placeState.carpet;
+			newCarpet.color = gameState.players[gameState.next_player].getTopCarpet();
+
+			// move carpet to board
+			try {
+				gameState.board.placeCarpet(newCarpet);
+			} catch (Exception) {
+				console.log(gameState.board.top_carpets);
+				console.log()
+
+				throw Exception;
+			}
+			gameState.players[gameState.next_player].deck.shift();
+
+			// update turn
+			gameState.next_action = Action.TURN;
+			gameState.next_player += 1;
+			if (gameState.next_player >= gameState.playercount) {
+				gameState.next_player = 0;
+				gameState.turn += 1;
+			}
+
+			// reset place state
+			setPlaceState(new Placement());
+
+			// update game state
+			const res = await API.graphql(graphqlOperation(updateGame, { id, modified, players: gameState.players, board: gameState.board })) as GQLRes;
+			setModified(res.data.updateGame.modified);
 		}
-
-		// define carpet
-		const newCarpet = placeState.carpet;
-		newCarpet.color = gameState.players[gameState.next_player].getTopCarpet();
-
-		// move carpet to board
-		try {
-			gameState.board.placeCarpet(newCarpet);
-		} catch (Exception) {
-			console.log(gameState.board.top_carpets);
-			console.log()
-
-			throw Exception;
-		}
-		gameState.players[gameState.next_player].deck.shift();
-
-		// update turn
-		gameState.next_action = Action.TURN;
-		gameState.next_player += 1;
-		if (gameState.next_player >= gameState.playercount) {
-			gameState.next_player = 0;
-			gameState.turn += 1;
-		}
-
-		// reset place state
-		setPlaceState(new Placement());
-
-		// update game state
-		await API.graphql(graphqlOperation(updateGame, { id, modified, players: gameState.players, board: gameState.board })) as GQLRes;;
 	}
 
 	function reset() {
@@ -456,6 +488,12 @@ export default function App() {
 
 
 	return <div className='container'>
+		{!gameState && <>
+		<div className="spinner-border loading-animation" role="status">
+		</div>
+		<span className="loading-text">Loading...</span>
+		</>}
+		{gameState && 
 		<div className='row'>
 			<StatusBar game={gameState}/>
 			<div className='col-12 col-md-8'>
@@ -477,6 +515,7 @@ export default function App() {
 				</div>
 			</div>
 		</div>
+		}
 	</div>
 }
   
