@@ -45,6 +45,22 @@ function GetDirectionalTransform(direction: Direction): string {
   return 'rotate('+Array(180,90,0,270)[direction]+'deg)';
 }
 
+// assign the total of shown colorus to each player
+function CountAllColours(game: Game, colorAssignments: Array<number>) {
+	const counts = [0,0,0,0];
+
+	for (let y = 0; y < 7; y++) {
+		for (let x = 0; x < 7; x++) {
+			const color = game.board.color(x,y);
+			if (color === Color.NONE) { continue; }
+
+			counts[colorAssignments[color]]++;
+		}
+	}
+
+	return counts;
+}
+
 type GameObjectProp = {
 	game: Game;
 }
