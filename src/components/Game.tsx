@@ -423,7 +423,7 @@ export default function App() {
 	useInterval(async () => {
 		await fetchGame();
 		console.log('Fetching new states..')
-	}, 2000);
+	}, 1000);
 
 	async function fetchGame() {
 		const res = await API.graphql(graphqlOperation(getGame, { id })) as GQLRes;
