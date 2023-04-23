@@ -372,6 +372,7 @@ export default function App() {
 	const { id } = useParams();
 
 	const [gameState, setGameState] = useState<Game>();
+	const [gameFinished, setGameFinished] = useState(false);
 	const [hash, setHash] = useState("");
 	const [colorAssignments, setColorAssignments] = useState([-1, 0, 1, 0, 1]);
 	const [modified, setModified] = useState("");
@@ -381,7 +382,7 @@ export default function App() {
 	useInterval(async () => {
 		await fetchGame();
 		console.log('Fetching new states..')
-	}, 3000);
+	}, 1000);
 
 	async function fetchGame() {
 		const res = await API.graphql(graphqlOperation(getGame, { id })) as GQLRes;
@@ -410,6 +411,9 @@ export default function App() {
 			return;
 		}
 
+		if (resData.players.map((player: any) => player.deck.length === 0).every((pl: any) => pl)) {
+			setGameFinished(true);
+		}
 		gameState.board.setValues(resData.board);
 		gameState.setTurnInfo(resData.turnInfo);
 		const players = resData.players;
@@ -506,6 +510,16 @@ export default function App() {
 
 
 	return <div className='container'>
+		{gameFinished && <div className='results-show'>
+			<div className='text-center mt-2'>
+				Game finished
+			</div>
+			{gameState?.players.slice().sort((playerA, playerB) => playerB.dirhams - playerA.dirhams).map((player, idx) => 
+				<div className='mx-2'>
+					{idx+1}. place: {player.name}: {player.dirhams} Dirhams
+				</div>
+			)}
+		</div>}
 		{!gameState && <>
 		<div className="spinner-border loading-animation" role="status">
 		</div>
