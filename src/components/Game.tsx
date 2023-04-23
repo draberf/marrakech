@@ -1,5 +1,4 @@
-import React, { EventHandler, useEffect, useRef, useState } from 'react';
-import { BindingElement } from 'typescript';
+import  { useEffect, useRef, useState } from 'react';
 
 // game state
 import { Color, Direction, Player, Game, Carpet, Action, Board as gameBoard } from '../game';
@@ -43,7 +42,7 @@ class Placement {
 
 // used to change the direction of tiles
 function GetDirectionalTransform(direction: Direction): string {
-  return 'rotate('+Array(180,90,0,270)[direction]+'deg)';
+  return 'rotate('+[180,90,0,270][direction]+'deg)';
 }
 
 // assign the total of shown colors to each player
@@ -74,15 +73,11 @@ type TileProp = {
 	onClickCallback: Function;
 }
 
-type FunctionalProp = {
-	function: Function;
-}
-
 function StatusBar({game}: GameObjectProp, update: string) {
 	const action = game.next_action === Action.TURN ? "Turning Assam" : "Placing a carpet";
 	return <>
 		<h2 className='text-center'>
-			{`\(TURN ${game.turn + 1}\) ${game.players[game.next_player].name}: ${action} `}
+			{`(TURN ${game.turn + 1}) ${game.players[game.next_player].name}: ${action} `}
 		</h2>
 	</>
 }
@@ -144,7 +139,7 @@ function PlayersArea({game, colorAssignments}: PlayersAreaProp) {
 
 	let players = game.players.map(player => {
 		const playerColorSrc = player.deck.length > 0 ?
-			Array(red_full, blue_full, yellow_full, orange_full)[player.getTopCarpet()-1] :
+			[red_full, blue_full, yellow_full, orange_full][player.getTopCarpet()-1] :
 			gone;
 		
 		const highlight = game.next_player === i ? 'playerHighlight playerLine' : 'playerLine';
@@ -152,8 +147,8 @@ function PlayersArea({game, colorAssignments}: PlayersAreaProp) {
 		
 		return <tr key={'player-'+i} className={highlight}>
 			<td>{game.players[i-1].name}:</td>
-			<td><img src={playerColorSrc}></img> {player.deck.length}</td>
-			<td><img src={dirham}></img> {player.dirhams}</td>
+			<td><img src={playerColorSrc} alt='' /> {player.deck.length}</td>
+			<td><img src={dirham} alt='' /> {player.dirhams}</td>
 			<td># {colorCounts[i-1]}</td>
 		</tr>
 	})
@@ -254,7 +249,7 @@ type BoardProp = {
 
 function Board({ game, turnState, turnCallback, placeState, placeCallback, colorAssignments, hash }: BoardProp) {
 	const tiles = [];
-	const deg = Array(270,180,90,0)[game.board.assam_dir];
+	const deg = [270,180,90,0][game.board.assam_dir];
 	const style = {
 		top:  `calc((100% * ${game.board.assam_y + 1} / 9) - 2.5px)`,
 		left: `calc((100% * ${game.board.assam_x + 1} / 9) - 2.5px)`,
@@ -346,7 +341,7 @@ function Board({ game, turnState, turnCallback, placeState, placeCallback, color
 
 	return <div className='w-100 col-12 col-md-8 position-relative'>
 		<div id="assam" className='assam' style={style}>
-			<img className='assam-img' src={assam}/>
+			<img className='assam-img' src={assam} alt='' />
 			<span className={`assam-arrow arrow-left ${left_highlight}`} onClick={() => turnCallback(TurnDirection.LEFT)}>
 				<FaArrowRight />
   			</span>
@@ -389,7 +384,7 @@ function Tile({ game, coordX, coordY, highlight_style, onClickCallback }: TilePr
 	  }
   
 	  return <div className="tile">
-		<img src={arc} className="floor" style={{transform: arcDir}}/>
+		<img src={arc} className="floor" style={{transform: arcDir}} alt='' />
 	  </div>;
 	} 
   
@@ -399,10 +394,10 @@ function Tile({ game, coordX, coordY, highlight_style, onClickCallback }: TilePr
 	const dirTransform: string = GetDirectionalTransform(dir);
   
 	if (color) {
-	  floorSrc = Array(red_half, blue_half, yellow_half, orange_half)[color-1];
+	  floorSrc = [red_half, blue_half, yellow_half, orange_half][color-1];
 	}
 	
-	const content = <img src={floorSrc} className='floor' style={{transform:dirTransform}}/>;  
+	const content = <img src={floorSrc} className='floor' style={{transform:dirTransform}} alt='' />;  
 	return <div className={`tile ${highlight_style}`} onClick={() => onClickCallback()}>
 		{content}
 	</div>;
@@ -460,7 +455,7 @@ export default function App() {
 		if (resData.players.map((player: any) => player.deck.length === 0).every((pl: any) => pl)) {
 
 			
-			if (finalScores.length == 0) {
+			if (finalScores.length === 0) {
 				const colorPoints = CountAllColours(gameState, colorAssignments);
 
 				for (let i = 0; i < gameState.playercount; i++) {
@@ -492,7 +487,7 @@ export default function App() {
 				if (turnState === TurnDirection.RIGHT) gameState.board.turnAssam(true);
 			}
 			setTurnState(TurnDirection.STRAIGHT);
-			const moves = Array(1,2,2,3,3,4)[Math.floor(Math.random()*6)];
+			const moves = [1,2,2,3,3,4][Math.floor(Math.random()*6)];
 			gameState.last_rolled = moves;
 			gameState.board.moveAssam(moves);
 
@@ -537,6 +532,7 @@ export default function App() {
 			// define carpet
 			const newCarpet = placeState.carpet;
 			newCarpet.color = gameState.players[gameState.next_player].getTopCarpet();
+			gameState.board.placeCarpet(newCarpet);
 
 			gameState.players[gameState.next_player].deck.shift();
 
