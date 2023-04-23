@@ -3,7 +3,7 @@ import  { useEffect, useRef, useState } from 'react';
 // game state
 import { Color, Direction, Player, Game, Carpet, Action, Board as gameBoard } from '../game';
 
-// images
+// import images
 import blue_half from '../assets/carpets/blue.png'
 import blue_full from '../assets/carpets/blue_complete.png'
 import orange_half from '../assets/carpets/orange.png'
@@ -14,7 +14,6 @@ import yellow_half from '../assets/carpets/yellow.png'
 import yellow_full from '../assets/carpets/yellow_complete.png'
 import empty from '../assets/carpets/empty.png'
 import gone from '../assets/carpets/gone.png'
-
 
 import arc from '../assets/arc.png'
 import assam from '../assets/assam.png'
@@ -27,8 +26,10 @@ import { GQLRes } from '../api/types';
 import getGame from '../api/getGame';
 import Dice from '../react-dice-roll';
 
+// selection of Assam's direction: turns left or right, or continues straight
 enum TurnDirection {STRAIGHT, LEFT, RIGHT};
 
+// class that defines the state of the multi-step placement process
 class Placement {
 
 	firstTile: boolean = false;
@@ -40,12 +41,21 @@ class Placement {
 
 }
 
-// used to change the direction of tiles
+/** Transforms a directional information to respective CSS transform 
+ * 
+ * @param direction The desired NEWS direction of the element.
+ * @returns String that reads 'rotate(Xdeg)' where X determines the rotation
+ */
 function GetDirectionalTransform(direction: Direction): string {
   return 'rotate('+[180,90,0,270][direction]+'deg)';
 }
 
-// assign the total of shown colors to each player
+/** Gives each player a score based on visible carpet colors
+ * 
+ * @param game The game object to calculate for.
+ * @param colorAssignments A 4-element array assigning each color to a player.
+ * @returns A 4-element array with the visible color count for each player.
+ */
 function CountAllColours(game: Game, colorAssignments: Array<number>) {
 	const counts = [0,0,0,0];
 
@@ -122,6 +132,11 @@ function ActionButtons({game, rollCallback, placeState, placeCallback, resetCall
 	</div>
 }
 
+/** Determines if any player on the current client is on a turn.
+ * 
+ * @param game The game object to check
+ * @returns Whether a player playing on the client is on a turn
+ */
 function IsMyTurn(game: Game): boolean {
 	const id = localStorage.getItem("_userId");
 	return game.players[game.next_player].id === id;
@@ -411,15 +426,28 @@ type FinalScoreElement = {
 export default function App() {
 	const { id } = useParams();
 
+	// INITIALIZE STATES
+
+	// game states
 	const [gameState, setGameState] = useState<Game>();
 	const [gameFinished, setGameFinished] = useState(false);
+
 	const [finalScores, setFinalScores] = useState([...Array<FinalScoreElement>(0)]);
+
 	const [hash, setHash] = useState("");
+
+	// assign each player to a color their own
+	// COULD be done in Game object
 	const [colorAssignments, setColorAssignments] = useState([-1, 0, 1, 0, 1]);
+
+	// check for updates from the server
 	const [modified, setModified] = useState("");
+	
 	// handle assam movement
 	const [turnState, setTurnState] = useState(TurnDirection.STRAIGHT);
 
+	// pull updates from server
+	// change timeout to reduce lag (but increase requests)
 	useInterval(async () => {
 		await fetchGame();
 		console.log('Fetching new states..')
@@ -452,8 +480,9 @@ export default function App() {
 			return;
 		}
 
-		if (resData.players.map((player: any) => player.deck.length === 0).every((pl: any) => pl)) {
 
+		// check for game end
+		if (resData.players.map((player: any) => player.deck.length === 0).every((pl: any) => pl)) {
 			
 			if (finalScores.length === 0) {
 				const colorPoints = CountAllColours(gameState, colorAssignments);
@@ -470,6 +499,8 @@ export default function App() {
 
 			setGameFinished(true);
 		}
+
+		// update game state
 		gameState.board.setValues(resData.board);
 		gameState.setTurnInfo(resData.turnInfo);
 		const players = resData.players;
@@ -480,6 +511,7 @@ export default function App() {
 		setHash(String(Math.random()));
 	}
 
+	// react to rolling the die
 	async function roll() {
 		if (gameState) {
 			if (turnState !== TurnDirection.STRAIGHT) {
@@ -520,7 +552,6 @@ export default function App() {
 
 	// handle carpet placement
 	const [placeState, setPlaceState] = useState(new Placement());
-
 	async function place() {
 		if (gameState) {
 			// by now, the Placement is ready
@@ -532,6 +563,9 @@ export default function App() {
 			// define carpet
 			const newCarpet = placeState.carpet;
 			newCarpet.color = gameState.players[gameState.next_player].getTopCarpet();
+			gameState.board.placeCarpet(newCarpet);
+
+			// place carpet
 			gameState.board.placeCarpet(newCarpet);
 
 			gameState.players[gameState.next_player].deck.shift();
@@ -559,11 +593,13 @@ export default function App() {
 		}
 	}
 
+	// reset button for the placement process
 	function reset() {
 		setPlaceState(new Placement());
 	}
 
 
+	// notice: upper half contains end screen, lower contains the game screen
 	return <div className='container'>
 		{gameFinished && <div className='results-show'>
 			<div className='text-center mt-2'>
