@@ -28,6 +28,7 @@ export default function CreateGame() {
 				config.players[i].name = name;
 			}
 			config.lobby = false;
+			// eslint-disable-next-line
 			config.players.map((player: any) => {player.id = cachedId });
 			const game = await newGame(config) as GQLRes;
 			window.location.href = `/${game.data.createGame.id}/game`;

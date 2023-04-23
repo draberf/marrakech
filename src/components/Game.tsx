@@ -25,7 +25,7 @@ import updateGame from '../api/updateGame';
 import { useParams } from 'react-router-dom';
 import { GQLRes } from '../api/types';
 import getGame from '../api/getGame';
-import Dice from 'react-dice-roll';
+import Dice from '../react-dice-roll';
 
 enum TurnDirection {STRAIGHT, LEFT, RIGHT};
 
