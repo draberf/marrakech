@@ -46,6 +46,22 @@ function GetDirectionalTransform(direction: Direction): string {
   return 'rotate('+Array(180,90,0,270)[direction]+'deg)';
 }
 
+// assign the total of shown colors to each player
+function CountAllColours(game: Game, colorAssignments: Array<number>) {
+	const counts = [0,0,0,0];
+
+	for (let y = 0; y < 7; y++) {
+		for (let x = 0; x < 7; x++) {
+			const color = game.board.color(x,y);
+			if (color === Color.NONE) { continue; }
+
+			counts[colorAssignments[color]]++;
+		}
+	}
+
+	return counts;
+}
+
 type GameObjectProp = {
 	game: Game;
 }
@@ -116,8 +132,15 @@ function IsMyTurn(game: Game): boolean {
 	return game.players[game.next_player].id === id;
 }
 
-function PlayersArea({game}: GameObjectProp) {
+type PlayersAreaProp = {
+	game: Game;
+	colorAssignments: Array<number>;
+}
+
+function PlayersArea({game, colorAssignments}: PlayersAreaProp) {
 	let i = 0;
+
+	const colorCounts = CountAllColours(game, colorAssignments);
 
 	let players = game.players.map(player => {
 		const playerColorSrc = player.deck.length > 0 ?
@@ -127,14 +150,17 @@ function PlayersArea({game}: GameObjectProp) {
 		const highlight = game.next_player === i ? 'playerHighlight playerLine' : 'playerLine';
 		i++;
 		
-		return <div key={'player-'+i} className={highlight}>
-			{game.players[i-1].name}: <img src={playerColorSrc}></img> {player.deck.length} <img src={dirham}></img> {player.dirhams}
-		</div>
+		return <tr key={'player-'+i} className={highlight}>
+			<td>{game.players[i-1].name}:</td>
+			<td><img src={playerColorSrc}></img> {player.deck.length}</td>
+			<td><img src={dirham}></img> {player.dirhams}</td>
+			<td># {colorCounts[i-1]}</td>
+		</tr>
 	})
 
-	return <>
+	return <table className='table'><tbody>
 		{players}
-	</>
+	</tbody></table>
 }
 
 function CarpetOverlapsTile(carpet: Carpet, [tile_x, tile_y]: [number, number]): boolean {
@@ -222,10 +248,11 @@ type BoardProp = {
 	turnCallback: Function;
 	placeState: Placement;
 	placeCallback: Function;
+	colorAssignments: Array<number>;
 	hash: string;
 }
 
-function Board({ game, turnState, turnCallback, placeState, placeCallback, hash }: BoardProp) {
+function Board({ game, turnState, turnCallback, placeState, placeCallback, colorAssignments, hash }: BoardProp) {
 	const tiles = [];
 	const deg = Array(270,180,90,0)[game.board.assam_dir];
 	const style = {
@@ -234,6 +261,8 @@ function Board({ game, turnState, turnCallback, placeState, placeCallback, hash 
 		// rotate Assam
 		transform: `rotate(${deg.toString()}deg)`,
 	}
+
+	const myTurn = IsMyTurn(game);
 
 	function selectFirstTile(x:number, y:number) {
 		placeState.firstTile = true;
@@ -296,6 +325,9 @@ function Board({ game, turnState, turnCallback, placeState, placeCallback, hash 
 				}
 			}
 
+			// override if it's not your turn anyway
+			if (!myTurn) {tileStyle = '';}
+
 			row.push(<Tile key={x+"-"+y} game={game} coordX={x} coordY={y} highlight_style={tileStyle} onClickCallback={tileCallback}/>);
 		}
 	  tiles.push(<div key={y} className='row'>{row}</div>)
@@ -306,7 +338,7 @@ function Board({ game, turnState, turnCallback, placeState, placeCallback, hash 
 	let right_highlight = 'hidden';
 	let straight_highlight = 'hidden';
 
-	if (game.next_action === Action.TURN) {
+	if (game.next_action === Action.TURN && IsMyTurn(game)) {
 		left_highlight = turnState === TurnDirection.LEFT ? 'highlight' : 'nohighlight';
 		right_highlight = turnState === TurnDirection.RIGHT ? 'highlight' : 'nohighlight';
 		straight_highlight = turnState === TurnDirection.STRAIGHT ? 'highlight' : 'nohighlight';
@@ -375,12 +407,18 @@ function Tile({ game, coordX, coordY, highlight_style, onClickCallback }: TilePr
 		{content}
 	</div>;
 }
-  
+
+type FinalScoreElement = {
+	name: string,
+	score: number
+}
+
 export default function App() {
 	const { id } = useParams();
 
 	const [gameState, setGameState] = useState<Game>();
 	const [gameFinished, setGameFinished] = useState(false);
+	const [finalScores, setFinalScores] = useState([...Array<FinalScoreElement>(0)]);
 	const [hash, setHash] = useState("");
 	const [colorAssignments, setColorAssignments] = useState([-1, 0, 1, 0, 1]);
 	const [modified, setModified] = useState("");
@@ -420,6 +458,21 @@ export default function App() {
 		}
 
 		if (resData.players.map((player: any) => player.deck.length === 0).every((pl: any) => pl)) {
+
+			
+			if (finalScores.length == 0) {
+				const colorPoints = CountAllColours(gameState, colorAssignments);
+
+				for (let i = 0; i < gameState.playercount; i++) {
+					finalScores.push({
+						name: gameState.players[i].name,
+						score: gameState.players[i].dirhams + colorPoints[i]
+					});
+				}
+
+				setFinalScores(finalScores);
+			}
+
 			setGameFinished(true);
 		}
 		gameState.board.setValues(resData.board);
@@ -485,15 +538,6 @@ export default function App() {
 			const newCarpet = placeState.carpet;
 			newCarpet.color = gameState.players[gameState.next_player].getTopCarpet();
 
-			// move carpet to board
-			try {
-				gameState.board.placeCarpet(newCarpet);
-			} catch (Exception) {
-				console.log(gameState.board.top_carpets);
-				console.log()
-
-				throw Exception;
-			}
 			gameState.players[gameState.next_player].deck.shift();
 
 			// update turn
@@ -529,9 +573,9 @@ export default function App() {
 			<div className='text-center mt-2'>
 				Game finished
 			</div>
-			{gameState?.players.slice().sort((playerA, playerB) => playerB.dirhams - playerA.dirhams).map((player, idx) => 
+			{finalScores.slice().sort((playerA, playerB) => playerB.score - playerA.score).map((player, idx) => 
 				<div className='mx-2'>
-					{idx+1}. place: {player.name}: {player.dirhams} Dirhams
+					{idx+1}. place: {player.name}: {player.score} points
 				</div>
 			)}
 		</div>}
@@ -548,6 +592,7 @@ export default function App() {
 					game={gameState}
 					turnState={turnState} turnCallback={setTurnState}
 					placeState={placeState} placeCallback={setPlaceState}
+					colorAssignments={colorAssignments}
 					hash={hash}
 				/>
 			</div>
@@ -557,7 +602,7 @@ export default function App() {
 						<ActionButtons game={gameState} rollCallback={roll} placeState={placeState} placeCallback={place} resetCallback={reset}/>
 					</div>
 					<div className='col-12'>
-						<PlayersArea game={gameState} />
+						<PlayersArea game={gameState} colorAssignments={colorAssignments} />
 					</div>
 				</div>
 			</div>
