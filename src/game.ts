@@ -116,6 +116,11 @@ export class Player {
     receive(amount: number): void {
         this.dirhams += amount;
     }
+
+    setValues(deck: Array<Color>, dirhams: number) {
+        this.deck = deck;
+        this.dirhams = dirhams;
+    }
 }
 
 /** Represents the board in a game state.
@@ -456,6 +461,13 @@ export class Board {
     
 }
 
+interface TurnInfo {
+    turn: number;
+    last_rolled: number;
+    next_player: number;
+    next_action: Action;
+}
+
 export class Game {
 
     players: Array<Player>;
@@ -489,6 +501,12 @@ export class Game {
 
         this.board = new Board();
         this.turn = 0;
+    }
 
+    setTurnInfo(turnInfo: TurnInfo) {
+        this.last_rolled = turnInfo.last_rolled;
+        this.next_action = turnInfo.next_action;
+        this.next_player = turnInfo.next_player;
+        this.turn = turnInfo.turn;
     }
 }

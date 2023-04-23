@@ -62,8 +62,6 @@ type FunctionalProp = {
 }
 
 function StatusBar({game}: GameObjectProp, update: string) {
-	// todo
-	const playerName = "<player name>";
 	const action = game.next_action === Action.TURN ? "Turning Assam" : "Placing a carpet";
 	return <>
 		<h2 className='text-center'>
@@ -81,28 +79,33 @@ type ActionButtonsProp = {
 }
 
 function ActionButtons({game, rollCallback, placeState, placeCallback, resetCallback}: ActionButtonsProp) {
-
-	let rollButtonDisabled: boolean = game.next_action !== Action.TURN;
+	const myTurn = IsMyTurn(game);
+	let rollButtonDisabled: boolean = game.next_action !== Action.TURN && myTurn;
 	let placeButtonDisabled: boolean = game.next_action !== Action.PLACE || !placeState.ready;
 	let resetButtonDisabled: boolean = game.next_action !== Action.PLACE || !placeState.firstTile;
 
 	return <div className='row'>
 		<div className='col-6 col-md-12'>
-			<button className='btn btn-primary m-2 w-100' disabled={rollButtonDisabled} onClick={() => rollCallback()}>
+			<button className='btn btn-primary m-2 w-100' disabled={(rollButtonDisabled || !myTurn)} onClick={() => rollCallback()}>
 				Roll
 			</button>
 		</div>
 		<div className='col-6 col-md-12'>
 			<div className='d-flex flex-row justify-content-around'>
-				<button className='btn btn-success m-2 w-50' disabled={placeButtonDisabled} onClick={() => placeCallback()}>
+				<button className='btn btn-success m-2 w-50' disabled={placeButtonDisabled || !myTurn} onClick={() => placeCallback()}>
 					Place
 				</button>
-				<button className='btn btn-danger m-2 w-25' disabled={resetButtonDisabled} onClick={() => resetCallback()}>
+				<button className='btn btn-danger m-2 w-25' disabled={resetButtonDisabled || !myTurn} onClick={() => resetCallback()}>
 					Reset
 				</button>
 			</div>
 		</div>
 	</div>
+}
+
+function IsMyTurn(game: Game): boolean {
+	const id = localStorage.getItem("_userId");
+	return game.players[game.next_player].id === id;
 }
 
 function PlayersArea({game}: GameObjectProp) {
@@ -368,17 +371,9 @@ function Tile({ game, coordX, coordY, highlight_style, onClickCallback }: TilePr
 export default function App() {
 	const { id } = useParams();
 
-
-	// hack: not going back to change server-side implementation
-	// COLOR -> PLAYER
-	const colorAssignments = [-1, 0, 1, 0, 1]; // todo
-	// if (gameState.playercount > 2) {
-	// 	colorAssignments[3] = 2;
-	// 	colorAssignments[4] = 3;
-	// }
-
 	const [gameState, setGameState] = useState<Game>();
 	const [hash, setHash] = useState("");
+	const [colorAssignments, setColorAssignments] = useState([-1, 0, 1, 0, 1]);
 	const [modified, setModified] = useState("");
 	// handle assam movement
 	const [turnState, setTurnState] = useState(TurnDirection.STRAIGHT);
@@ -386,14 +381,15 @@ export default function App() {
 	useInterval(async () => {
 		await fetchGame();
 		console.log('Fetching new states..')
-	}, 2000);
+	}, 3000);
 
 	async function fetchGame() {
 		const res = await API.graphql(graphqlOperation(getGame, { id })) as GQLRes;
-		setModified(res.data.getGame.modified);
+		const resData = res.data.getGame;
+		setModified(resData.modified);
 		if (!gameState) {
 			const players = [];
-			for (const player of res.data.getGame.players) {
+			for (const player of resData.players) {
 				players.push(new Player(
 					player.deck,
 					player.dirhams,
@@ -402,14 +398,24 @@ export default function App() {
 				))
 			}
 			const game = new Game(players);
-			game.board.setValues(res.data.getGame.board);
+			if (game.playercount > 2) {
+				colorAssignments[3] = 2;
+				colorAssignments[4] = 3;
+			}
+			setColorAssignments(colorAssignments);
+			game.board.setValues(resData.board);
+			game.setTurnInfo(resData.turnInfo)
 			setGameState(game);
 			setHash(String(Math.random()));
 			return;
 		}
 
-		gameState.board.setValues(res.data.getGame.board);
-		// gameState.players = res.data.getGame.players; // todo
+		gameState.board.setValues(resData.board);
+		gameState.setTurnInfo(resData.turnInfo);
+		const players = resData.players;
+		for (const id in gameState.players) {
+			gameState.players[id].setValues(players[id].deck, players[id].dirhams)
+		}
 		setGameState(gameState);
 		setHash(String(Math.random()));
 	}
@@ -433,8 +439,14 @@ export default function App() {
 			}
 
 			gameState.next_action = Action.PLACE;
-
-			const res = await API.graphql(graphqlOperation(updateGame, { id, modified, players: gameState.players, board: gameState.board })) as GQLRes;
+			
+			const turnInfo = {
+				turn: gameState.turn,
+				next_player: gameState.next_player,
+				next_action: gameState.next_action,
+				last_rolled: gameState.last_rolled,
+			}
+			const res = await API.graphql(graphqlOperation(updateGame, { id, modified, players: gameState.players, board: gameState.board, turnInfo: turnInfo })) as GQLRes;
 			setModified(res.data.updateGame.modified);
 		}
 	}
@@ -476,8 +488,14 @@ export default function App() {
 			// reset place state
 			setPlaceState(new Placement());
 
+			const turnInfo = {
+				turn: gameState.turn,
+				next_player: gameState.next_player,
+				next_action: gameState.next_action,
+				last_rolled: gameState.last_rolled,
+			}
 			// update game state
-			const res = await API.graphql(graphqlOperation(updateGame, { id, modified, players: gameState.players, board: gameState.board })) as GQLRes;
+			const res = await API.graphql(graphqlOperation(updateGame, { id, modified, players: gameState.players, board: gameState.board, turnInfo: turnInfo })) as GQLRes;
 			setModified(res.data.updateGame.modified);
 		}
 	}

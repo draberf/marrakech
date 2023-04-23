@@ -44,7 +44,14 @@ export default function SelectedLobby() {
 		const data = players;
 		data[idx].id = cacheId as string;
 		data[idx].name = name;
-		const res = await API.graphql(graphqlOperation(updateGame, { id, modified, players: data, board: board })) as GQLRes;
+
+		const turnInfo = {
+			turn: 0,
+			last_rolled: -1,
+			next_player: 0,
+			next_action: 0,
+		};
+		const res = await API.graphql(graphqlOperation(updateGame, { id, modified, players: data, board: board, turnInfo: turnInfo })) as GQLRes;
 		setPlayers(res.data.updateGame.players);
 		setModified(res.data.updateGame.modified);
 	}

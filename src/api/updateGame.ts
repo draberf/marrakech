@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
 export default gql`
-mutation($id: ID!, $modified: AWSDateTime!, $players: [PlayerInput!]!, $board: BoardInput!) {
-	updateGame(id: $id, modified: $modified, players: $players, board: $board) {
+mutation($id: ID!, $modified: AWSDateTime!, $players: [PlayerInput!]!, $board: BoardInput!, $turnInfo: TurnInfoInput) {
+	updateGame(id: $id, modified: $modified, players: $players, board: $board, turnInfo: $turnInfo) {
 		id
 		modified
         players {
@@ -26,6 +26,12 @@ mutation($id: ID!, $modified: AWSDateTime!, $players: [PlayerInput!]!, $board: B
 			grid
 			dir_grid
 			assam_y
+		}
+		turnInfo {
+			turn
+			last_rolled
+			next_action
+			next_player
 		}
 	}
 }

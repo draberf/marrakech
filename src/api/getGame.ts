@@ -28,6 +28,12 @@ query($id: ID!) {
 			assam_y
 		}
 		totalPlayers
+		turnInfo {
+			turn
+			last_rolled
+			next_action
+			next_player
+		}
 	}
 }
 `;
