@@ -1,3 +1,5 @@
+NOTE: The [react-dice-roll](https://www.npmjs.com/package/react-dice-roll) library is included in the project distribution as it cannot be automatically installed through package management due to version conflicts. It is not a creation of the project authors.
+
 # MARRAKECH
 
 This project is an implementation of the [Marrakech board game](https://boardgamegeek.com/boardgame/29223/marrakech) (also known as Suleika) for the Internet Applications course (2022/2023 Summer) at FIT BUT, Brno.
