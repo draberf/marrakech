@@ -35,39 +35,70 @@ export default function Tutorial() {
 			</h3>
 			<div className="text-center">
 				{page === 1 && <>
-					Welcome to Marrakech! You are a market vendor hoping to impress Assam, the market owner, with your carpets.
+					<div className="">
+						<div>
+							Welcome to Marrakech! You are a market vendor hoping to impress Assam, the market owner, with your carpets.
+						</div>
 
-					<img src={midgame}></img>
+						<img className="tutorial-one" src={midgame} alt="" />
+					</div>
 				</>}
 				{page === 2 && <>
-					At the start of your turn, you get to direct Assam to move straight or turn to his side.
-					
-					<img src={assam_arrows}></img>
-					
-					Then, you roll a die to determine how far Assam moves. Assam is more likely to move 2 or 3 steps.
+					<div>
+						<div>
+							At the start of your turn, you get to direct Assam to move straight or turn to his side.
+						</div>
+						
+						<img className="mw-100" src={assam_arrows} alt="" />
+						
+						<div>
+							Then, you roll a die to determine how far Assam moves. Assam is more likely to move 2 or 3 steps.
+						</div>
 
-					<img src={roll_button}></img>
+						<img className="mw-100" src={roll_button} alt="" />
+					</div>
 				</>}
 				{page === 3 && <>
-					If Assam ends up standing on one of your opponent's carpets, you have to pay your opponent. Pay one Dirham for each space in the contiguous area that Assam is standing in. Likewise, your opponents will pay you if Assam steps on your carpets on your turn.
+					<div>
+						<div>
+							If Assam ends up standing on one of your opponent's carpets, you have to pay your opponent. Pay one Dirham for each space in the contiguous area that Assam is standing in. Likewise, your opponents will pay you if Assam steps on your carpets on your turn.
+						</div>
 
-					<img src={contiguous}></img>
-
-					<img src={dirham_count}></img>
+						<div className="img-crop">
+							<img className="mw-100-600" src={contiguous} alt="" />
+						</div>
+						<div>
+							<img className="mw-100" src={dirham_count} alt="" />
+						</div>
+					</div>
 				</>}
 				{page === 4 && <>
-					After Assam moves, you can place one of your carpets. It has to cover one space adjacent to Assam, so you have to select one such space like that, then the second to define the carpet placement. You cannot place a carpet to perfectly overlap another carpet.
+					<div>
+						<div>
+							After Assam moves, you can place one of your carpets. It has to cover one space adjacent to Assam, so you have to select one such space like that, then the second to define the carpet placement. You cannot place a carpet to perfectly overlap another carpet.
+						</div>
 
-					<img src={placement1}></img><img src={placement2}></img><img src={placement3}></img><img src={placement4}></img>
+						<div className="mw-100">
+							<img className="mw-25" src={placement1} alt="" />
+							<img className="mw-25" src={placement2} alt="" />
+							<img className="mw-25" src={placement3} alt="" />
+							<img className="mw-25" src={placement4} alt="" />
+						</div>
 
-					<img src={place_button}></img>
-
-					{'(If you are playing a game of two players, note that your deck consists of carpets of two colors. They do not form contiguous areas together.)'}
+						<img className="mw-100" src={place_button} alt="" />
+						<div>
+							{'(If you are playing a game of two players, note that your deck consists of carpets of two colors. They do not form contiguous areas together.)'}
+						</div>
+					</div>
 				</>}
 				{page === 5 && <>
-					The game ends when all players place their last carpet. The winner is the player with the most Dirhams added to the number of squares they have visible in the market.
+					<div>
+						<div>
+							The game ends when all players place their last carpet. The winner is the player with the most Dirhams added to the number of squares they have visible in the market.
+						</div>
 
-					<img src={game_end}></img>
+						<img src={game_end} alt="" />
+					</div>
 				</>}
 			</div>
 			<div className="text-center my-3">
