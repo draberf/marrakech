@@ -538,15 +538,6 @@ export default function App() {
 			const newCarpet = placeState.carpet;
 			newCarpet.color = gameState.players[gameState.next_player].getTopCarpet();
 
-			// move carpet to board
-			try {
-				gameState.board.placeCarpet(newCarpet);
-			} catch (Exception) {
-				console.log(gameState.board.top_carpets);
-				console.log()
-
-				throw Exception;
-			}
 			gameState.players[gameState.next_player].deck.shift();
 
 			// update turn
