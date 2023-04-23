@@ -80,7 +80,7 @@ export default function SelectedLobby() {
 							Player {idx + 1}
 						</div>
 						<div className="col-6">
-							<input id={"player-" + idx } key={idx} className="form-control my-1" type="text" onChange={validateSelf} placeholder={"Player " + (idx + 1)} />
+							<input id={"player-" + idx } key={idx} className="form-control my-1" type="text" onChange={validateSelf} placeholder={"Player " + (idx + 1)} disabled={row.id !== null} />
 						</div>
 						<div className="col-3">
 							{ !row.id &&
