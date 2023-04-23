@@ -13,7 +13,6 @@ import placement1 from '../assets/tutorial/placement1.png'
 import placement2 from '../assets/tutorial/placement2.png'
 import placement3 from '../assets/tutorial/placement3.png'
 import placement4 from '../assets/tutorial/placement4.png'
-import player_area from '../assets/tutorial/player_area.png'
 import roll_button from '../assets/tutorial/roll_button.png'
 
 export default function Tutorial() {
