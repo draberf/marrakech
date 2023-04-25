@@ -17,6 +17,8 @@ Mojmír Kyjonka (xkyjon00@stud.fit.vutbr.cz): API, App structure, React UI (coll
 
 * `npm run build`: Build the application in a production version.
 
+* `npx typedoc`: Create documentation in `docs/` folder.
+
 ## Files and Directories
 
 These are notable files that can be found in the project directory, including the most important scripts:
