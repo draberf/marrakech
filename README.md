@@ -6,8 +6,8 @@ This project is an implementation of the [Marrakech board game](https://boardgam
 
 ## Implementation Credits
 
-Filip Dráber (xdrabe09@stud.fit.vutbr.cz): Game engine, React UI (collab.)
-Mojmír Kyjonka (xkyjon00@stud.fit.vutbr.cz): API, React UI (collab.) 
+Filip Dráber (xdrabe09@stud.fit.vutbr.cz): Game engine, graphics, React UI (collab.)
+Mojmír Kyjonka (xkyjon00@stud.fit.vutbr.cz): API, App structure, React UI (collab.) 
 
 ## Installation and Usage
 
