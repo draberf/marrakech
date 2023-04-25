@@ -1,0 +1,14 @@
+{
+    "entryPoints": ["./src"],
+    "entryPointStrategy": "expand",
+    "out": "./docs",
+    "readme": "./README.md",
+    "exclude": [
+        "App_tictactoe",
+        "index",
+        "react-app-env",
+        "react-dice-roll*",
+        "reportWebVitals",
+        "setupTests"
+    ]
+}
