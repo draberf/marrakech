@@ -83,6 +83,12 @@ type TileProp = {
 	onClickCallback: Function;
 }
 
+/** Displays status bar above the play area.
+ * 
+ * @param game representation of the current game state
+ * @param update hash to make the bar update reactively
+ * @returns HTML representation of the bar
+ */
 function StatusBar({game}: GameObjectProp, update: string) {
 	const action = game.next_action === Action.TURN ? "Turning Assam" : "Placing a carpet";
 	return <>
@@ -100,6 +106,15 @@ type ActionButtonsProp = {
 	resetCallback: Function;
 }
 
+/** Shows the Roll, Place, Reset action buttons.
+ * 
+ * @param game representation of the current game state
+ * @param rollCallback callback function to call when the Roll button is pressed
+ * @param placeState state of the placement process
+ * @param placeCallback callback function to call when the Place button is pressed
+ * @param resetCallback callback function to call when the Reset button is pressed
+ * @returns HTML representation of the three buttons
+ */
 function ActionButtons({game, rollCallback, placeState, placeCallback, resetCallback}: ActionButtonsProp) {
 	const myTurn = IsMyTurn(game);
 	let rollButtonDisabled: boolean = game.next_action !== Action.TURN && myTurn;
@@ -134,8 +149,8 @@ function ActionButtons({game, rollCallback, placeState, placeCallback, resetCall
 
 /** Determines if any player on the current client is on a turn.
  * 
- * @param game The game object to check
- * @returns Whether a player playing on the client is on a turn
+ * @param game the game object to check
+ * @returns whether a player playing on the client is on a turn
  */
 function IsMyTurn(game: Game): boolean {
 	const id = localStorage.getItem("_userId");
@@ -147,6 +162,12 @@ type PlayersAreaProp = {
 	colorAssignments: Array<number>;
 }
 
+/** Displays the carpet count, dirhams and visible squares of each player
+ * 
+ * @param game representation of the game state
+ * @param colorAssignments array assigning each of the four colors to a player
+ * @returns HTML representation of the player area
+ */
 function PlayersArea({game, colorAssignments}: PlayersAreaProp) {
 	let i = 0;
 
@@ -173,6 +194,13 @@ function PlayersArea({game, colorAssignments}: PlayersAreaProp) {
 	</tbody></table>
 }
 
+/** Checks if a carpet overlaps a tile with XY coordinates.
+ * 
+ * @param carpet the carpet to check with
+ * @param tile_x the x-coordinate of the checked tile
+ * @param tile_y the y-coordinate of the checked tile 
+ * @returns whether the tile overlaps with the carpet 
+ */
 function CarpetOverlapsTile(carpet: Carpet, [tile_x, tile_y]: [number, number]): boolean {
 	if (carpet.x === tile_x && carpet.y === tile_y) {
 		return true;
@@ -184,6 +212,11 @@ function CarpetOverlapsTile(carpet: Carpet, [tile_x, tile_y]: [number, number]):
 	return false;
 }
 
+/** Finds the first tiles to select during carpet placement.
+ * 
+ * @param board representation of the board's current state
+ * @returns array of XY coordinates of valid tiles to select
+ */
 function GetFirstTileCandidates(board: gameBoard): Array<[number, number]> {
 	let validPositions: Array<Carpet> = board.getValidPositions();
 	let surroundingTiles: Array<[number, number]> = [
@@ -207,6 +240,12 @@ function GetFirstTileCandidates(board: gameBoard): Array<[number, number]> {
 	return tiles;
 }
 
+/** Finds valid carpet placements that overlap the first selected tile during placement process.
+ * 
+ * @param board representation of the board's current state
+ * @param firstTile first selected tile in the placement process
+ * @returns array of pairs of valid carpets and XY coordinates of the tile which places said carpet 
+ */
 function GetCarpetCandidates(board: gameBoard, firstTile: [number, number]): Array<[Carpet, [number, number]]> {
 	let candidates: Array<[Carpet, [number, number]]> = [];
 
@@ -258,11 +297,20 @@ type BoardProp = {
 	turnCallback: Function;
 	placeState: Placement;
 	placeCallback: Function;
-	colorAssignments: Array<number>;
 	hash: string;
 }
 
-function Board({ game, turnState, turnCallback, placeState, placeCallback, colorAssignments, hash }: BoardProp) {
+/** Displays the current game board.
+ * 
+ * @param game representation of the current game state
+ * @param turnState selection of whether Assam should continue straight, or turn
+ * @param turnCallback callback function to update the direction selection
+ * @param placeState state of the carpet placement process
+ * @param placeCallback callback function to update the placement process state
+ * @param hash hash to make the bar update reactively
+ * @returns HTML representation of the current board
+ */
+function Board({ game, turnState, turnCallback, placeState, placeCallback, hash }: BoardProp) {
 	const tiles = [];
 	const deg = [270,180,90,0][game.board.assam_dir];
 	const style = {
@@ -370,7 +418,16 @@ function Board({ game, turnState, turnCallback, placeState, placeCallback, color
 		{tiles}
 	</div>
 }
-  
+
+/** Displays a single board tile.
+ * 
+ * @param game representation of the current game state
+ * @param coordX X-coordinate of the tile
+ * @param coordY Y-coordinate of the tile
+ * @param highlight_style style class defining the tile's highlight state
+ * @param onClickCallback function to call when the tile is clicked
+ * @returns HTML representation of a single tile
+ */
 function Tile({ game, coordX, coordY, highlight_style, onClickCallback }: TileProp) {
 	
 	// clear border tiles
@@ -423,6 +480,10 @@ type FinalScoreElement = {
 	score: number
 }
 
+/** Complete appearance of the game window.
+ *
+ * @returns HTML representation of the game window with callbacks.
+ */
 export default function App() {
 	const { id } = useParams();
 
@@ -624,7 +685,6 @@ export default function App() {
 					game={gameState}
 					turnState={turnState} turnCallback={setTurnState}
 					placeState={placeState} placeCallback={setPlaceState}
-					colorAssignments={colorAssignments}
 					hash={hash}
 				/>
 			</div>
