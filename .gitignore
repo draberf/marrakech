@@ -2,6 +2,7 @@
 /coverage
 /build
 /carpets_design
+/docs
 
 src/App_tictactoe.tsx
 
