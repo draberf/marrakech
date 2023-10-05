@@ -27,13 +27,13 @@ These are notable files that can be found in the project directory, including th
 * `src/assets/tutorial`: images for the tutorial
 * `src/assets/[arc|assam|dirham].png`: more image sources
 * `src/components/`: React implementation of various screens, notably:
-> `src/components/Game.tsx`: the main implementation of the game UI
+  - `src/components/Game.tsx`: the main implementation of the game UI
 * `src/`: various vital scripts, notably:
-> `src/App.tsx`: main window to plug components into
+  - `src/App.tsx`: main window to plug components into
 
-> `src/App.css`: composite Cascade Style Sheet for all components
+  - `src/App.css`: composite Cascade Style Sheet for all components
 
-> `src/game.ts`: implementation of the Marrakech game
+  - `src/game.ts`: implementation of the Marrakech game
 
 * `README.md`: this file
 
